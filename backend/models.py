@@ -50,11 +50,12 @@ class Api(BaseTable):
 
     name = models.CharField("name", null=False, max_length=100, unique=True)
     variables = models.TextField("variables", null=True, blank=True)
-    url = models.CharField("url", null=False, max_length=50)
+    api_url = models.CharField("api_url", null=False, max_length=50)
     method = models.CharField("method", choices=method_map, default=1, max_length=50)
     header = models.TextField("header", null=True)
     body = models.TextField("body", null=False)
     validators = models.TextField("validators", null=True, blank=True)
+
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='my_apis')
 
     def __str__(self):
@@ -89,6 +90,7 @@ class Case(BaseTable):
 
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='my_cases', null=True)
     suites = models.ManyToManyField(Suite, related_name='my_cases')
+    # Does apis needed?
     apis = models.ManyToManyField(Api, related_name='my_cases')
 
     def __str__(self):
@@ -107,9 +109,10 @@ class Step(BaseTable):
     base_url = models.CharField("base_url", null=True, blank=True, max_length=50)
     header = models.TextField("header", null=True)
     validators = models.TextField("validators", null=True, blank=True)
+    order = models.IntegerField("order", default=99)
 
     api = models.ForeignKey(Api, on_delete=models.CASCADE, related_name='my_steps')
-    cases = models.ManyToManyField(Case, related_name='my_steps')
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='my_steps')
 
     def __str__(self):
         return str(self.name)
@@ -174,6 +177,8 @@ class Config(BaseTable):
     ip = models.GenericIPAddressField("ip")
     port = models.IntegerField("port", default=8888)
     hostname = models.URLField("hostname", max_length=100, default='http://')
+
+    project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='my_configs', null=True)
 
     def __str__(self):
         return str(self.name)

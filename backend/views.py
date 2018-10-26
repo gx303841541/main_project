@@ -1,10 +1,13 @@
-from backend.models import Project
+from backend.models import *
 from backend.permissions import IsOwnerOrReadOnly
 from backend.serializers import *
+from backend.utils import parser, rsp_msg
 from django.contrib.auth.models import User
 from django.http import Http404
 from rest_framework import generics, mixins, permissions, status, viewsets
-from rest_framework.decorators import api_view, detail_route
+from rest_framework.decorators import action, api_view, detail_route
+from rest_framework.pagination import (CursorPagination, LimitOffsetPagination,
+                                       PageNumberPagination)
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
@@ -213,6 +216,37 @@ class ApiViewSet(viewsets.ModelViewSet):
     serializer_class = ApiSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def create(self, request, format=None):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            # format request.data(from frontend) to backend format
+            formater = parser.Formater(request.data)
+            data = formater.get_backend_api()
+            if data:
+                Api.objects.create(**data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        api = self.get_object()
+        serializer = self.get_serializer(api, data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+            # format request.data(from frontend) to backend format
+            formater = parser.Formater(request.data)
+            data = formater.get_backend_api()
+            if data:
+                API.objects.filter(id=kwargs['pk']).update(**data)
+                return Response(serializer.data, response.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class SuiteViewSet(viewsets.ModelViewSet):
     """
@@ -221,6 +255,10 @@ class SuiteViewSet(viewsets.ModelViewSet):
     queryset = Suite.objects.all()
     serializer_class = SuiteSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    @action(detail=True, methods=['get', 'post'])
+    def run(self, request, pk=None):
+        return Response({'status': 'suite runing！'})
 
 
 class CaseViewSet(viewsets.ModelViewSet):
@@ -231,6 +269,42 @@ class CaseViewSet(viewsets.ModelViewSet):
     serializer_class = CaseSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
+    def create(self, request, format=None):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            # format request.data(from frontend) to backend format
+            formater = parser.Formater(request.data)
+            data = formater.get_backend_case()
+            if data:
+                Case.objects.create(**data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        case = self.get_object()
+        serializer = self.get_serializer(case, data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+            # format request.data(from frontend) to backend format
+            formater = parser.Formater(request.data)
+            data = formater.get_backend_case()
+            if data:
+                Case.objects.filter(id=kwargs['pk']).update(**data)
+                return Response(serializer.data, response.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['get', 'post'])
+    def run(self, request, pk=None):
+        print(request.auth)
+        return Response(rsp_msg.CASE_RUNNING)
+
 
 class StepViewSet(viewsets.ModelViewSet):
     """
@@ -239,6 +313,37 @@ class StepViewSet(viewsets.ModelViewSet):
     queryset = Step.objects.all()
     serializer_class = StepSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+
+    def create(self, request, format=None):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+            # format request.data(from frontend) to backend format
+            formater = parser.Formater(request.data)
+            data = formater.get_backend_step()
+            if data:
+                Step.objects.create(**data)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        step = self.get_object()
+        serializer = self.get_serializer(step, data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+
+            # format request.data(from frontend) to backend format
+            formater = parser.Formater(request.data)
+            data = formater.get_backend_step()
+            if data:
+                Step.objects.filter(id=kwargs['pk']).update(**data)
+                return Response(serializer.data, response.HTTP_202_ACCEPTED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CaseResultViewSet(viewsets.ModelViewSet):
@@ -257,6 +362,7 @@ class StepResultViewSet(viewsets.ModelViewSet):
     queryset = StepResult.objects.all()
     serializer_class = StepResultSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = PageNumberPagination
 
 
 class SuiteResultViewSet(viewsets.ModelViewSet):

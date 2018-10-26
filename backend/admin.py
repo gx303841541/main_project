@@ -12,7 +12,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class ApiAdmin(admin.ModelAdmin):
     #fields = ['name', 'url']
-    list_display = ('name', 'variables', 'url', 'method', 'header', 'body', 'validators')
+    list_display = ('name', 'variables', 'api_url', 'method', 'header', 'body', 'validators')
 
 
 class SuiteAdmin(admin.ModelAdmin):

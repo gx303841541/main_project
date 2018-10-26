@@ -14,6 +14,8 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
         many=True, view_name='suite-detail', queryset=Suite.objects.all(), allow_null=True, required=False)
     my_cases = serializers.HyperlinkedRelatedField(
         many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
+    my_configs = serializers.HyperlinkedRelatedField(
+        many=True, view_name='config-detail', queryset=Config.objects.all(), allow_null=True, required=False)
 
     class Meta:
         model = Project
@@ -29,6 +31,13 @@ class ApiSerializer(serializers.HyperlinkedModelSerializer):
     my_cases = serializers.HyperlinkedRelatedField(
         many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
     #my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
+
+    '''json = serializers.SerializerMethodField()
+
+    def get_json(self, obj):
+        parse = Parse(obj.body)
+        parse.parse_http()
+        return parse.testcase'''
 
     class Meta:
         model = Api
