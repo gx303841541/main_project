@@ -7,7 +7,13 @@ CASE_RUNNING = {
 CASE_DONE = {
     "code": "0002",
     "success": True,
-    "msg": "case done!"
+    "msg": "run case done!"
+}
+
+CASE_CANCEL = {
+    "code": "0003",
+    "success": True,
+    "msg": "run case canceled!"
 }
 
 

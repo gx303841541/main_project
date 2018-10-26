@@ -302,8 +302,13 @@ class CaseViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get', 'post'])
     def run(self, request, pk=None):
-        print(request.auth)
+        print(self.basename)
         return Response(rsp_msg.CASE_RUNNING)
+
+    @action.mapping.delete
+    def cancel_run(self, request, pk=None):
+        print('run stop')
+        return Response(rsp_msg.CASE_CANCEL)
 
 
 class StepViewSet(viewsets.ModelViewSet):
