@@ -1,8 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.models import User
+from rest_framework.authtoken.admin import TokenAdmin
 
 from .models import (Api, Case, CaseResult, Config, Project, Step, StepResult,
                      Suite, SuiteResult)
+
+TokenAdmin.raw_id_fields = ('user',)
 
 
 class ProjectAdmin(admin.ModelAdmin):
@@ -12,7 +15,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class ApiAdmin(admin.ModelAdmin):
     #fields = ['name', 'url']
-    list_display = ('name', 'variables', 'api_url', 'method', 'header', 'body', 'validators')
+    list_display = ('name', 'variables', 'api_url', 'method', 'header', 'data', 'validate')
 
 
 class SuiteAdmin(admin.ModelAdmin):
@@ -22,12 +25,12 @@ class SuiteAdmin(admin.ModelAdmin):
 
 class CaseAdmin(admin.ModelAdmin):
     #fields = ['name', 'url']
-    list_display = ('name', 'parameters', 'variables', 'base_url', 'header', 'validators')
+    list_display = ('name', 'parameters', 'variables', 'base_url', 'header')
 
 
 class StepAdmin(admin.ModelAdmin):
     #fields = ['name', 'url']
-    list_display = ('name', 'extractors', 'variables', 'base_url', 'header', 'validators')
+    list_display = ('name', 'extract', 'variables', 'base_url', 'header', 'validate')
 
 
 class CaseResultAdmin(admin.ModelAdmin):

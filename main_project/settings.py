@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+# celery config
+import djcelery
+from celery.schedules import crontab, timedelta
+
+djcelery.setup_loader()
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -37,8 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'usermanager.apps.UsermanagerConfig',
     'backend.apps.BackendConfig',
     'rest_framework',
+    'rest_framework.authtoken',
+    'crispy_forms',
+    'djcelery',
+
 ]
 
 MIDDLEWARE = [
@@ -124,10 +135,36 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-    #    'rest_framework.authentication.BasicAuthentication',
-    # ),
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 5,
+    # 分页
+    'PAGE_SIZE': 2,
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+
+    # 认证
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.TokenAuthentication',
+    ),
+
+    # 权限管理
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.AllowAny',
+    ),
+
+    # 过滤
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
 }
+
+
+# celery config
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
+#BROKER_URL = 'redis://127.0.0.1:6379/0'
+BROKER_URL = 'amqp://guest@localhost//'
+#BROKER_URL = 'amqp://kobe:kobe@192.168.50.131:5672/vhost/'
+#CELERY_RESULT_BACKEND = 'amqp://guest@localhost//'
+#BROKER_TRANSPORT = 'redis'
+CELERY_IMPORTS = ('backend.task')
+CELERY_TIMEZONE = 'Asia/Shanghai'
+CELERY_ENABLE_UTC = True
+CELERYD_CONCURRENCY = 10
+CELERY_TASK_RESULT_EXPIRES = 0.1 * 60 * 60  # celery任务执行结果的超时时间，

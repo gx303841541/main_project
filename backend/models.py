@@ -1,7 +1,18 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
+from usermanager.models import UserInfo
 
 from .my_fields import ListField
+
+
+@receiver(post_save, sender=settings.AUTH_USER_MODEL)
+def create_auth_token(sender, instance=None, created=False, **kwargs):
+    if created:
+        Token.objects.create(user=instance)
 
 
 class BaseTable(models.Model):
@@ -19,8 +30,8 @@ class BaseTable(models.Model):
 # project model
 class Project(BaseTable):
     name = models.CharField("project name", unique=True, null=False, max_length=40)
-    owner = models.ForeignKey(User, related_name='my_projects', on_delete=models.CASCADE)
-    #owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    #owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='my_projects')
+    owner = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name='my_projects')
     desc = models.CharField("project description", null=False, max_length=200)
 
     def __str__(self):
@@ -53,8 +64,10 @@ class Api(BaseTable):
     api_url = models.CharField("api_url", null=False, max_length=50)
     method = models.CharField("method", choices=method_map, default=1, max_length=50)
     header = models.TextField("header", null=True)
-    body = models.TextField("body", null=False)
-    validators = models.TextField("validators", null=True, blank=True)
+    data = models.TextField("data", null=True, blank=True)
+    json = models.TextField("json", null=True, blank=True)
+    params = models.TextField("params", null=True, blank=True)
+    validate = models.TextField("validate", null=True, blank=True)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='my_apis')
 
@@ -86,7 +99,7 @@ class Case(BaseTable):
     variables = models.TextField("variables", null=True, blank=True)
     base_url = models.CharField("base_url", null=False, max_length=50)
     header = models.TextField("header", null=True, blank=True)
-    validators = models.TextField("validators", null=True, blank=True)
+    order = models.IntegerField("order", default=99)
 
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='my_cases', null=True)
     suites = models.ManyToManyField(Suite, related_name='my_cases')
@@ -105,10 +118,10 @@ class Case(BaseTable):
 class Step(BaseTable):
     name = models.CharField("name", null=False, max_length=100, unique=True)
     variables = models.TextField("variables", null=True, blank=True)
-    extractors = models.TextField("extractors", null=True, blank=True)
+    extract = models.TextField("extract", null=True, blank=True)
     base_url = models.CharField("base_url", null=True, blank=True, max_length=50)
     header = models.TextField("header", null=True)
-    validators = models.TextField("validators", null=True, blank=True)
+    validate = models.TextField("validate", null=True, blank=True)
     order = models.IntegerField("order", default=99)
 
     api = models.ForeignKey(Api, on_delete=models.CASCADE, related_name='my_steps')

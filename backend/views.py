@@ -1,73 +1,23 @@
+import os
+import sys
+
+import backend.task as task
+import django_filters.rest_framework
+from backend.httprunner.logger import logger
 from backend.models import *
 from backend.permissions import IsOwnerOrReadOnly
 from backend.serializers import *
-from backend.utils import parser, rsp_msg
+from backend.utils import formater, pagination, rsp_msg
 from django.contrib.auth.models import User
 from django.http import Http404
-from rest_framework import generics, mixins, permissions, status, viewsets
+from rest_framework import (filters, generics, mixins, permissions, status,
+                            viewsets)
 from rest_framework.decorators import action, api_view, detail_route
 from rest_framework.pagination import (CursorPagination, LimitOffsetPagination,
                                        PageNumberPagination)
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
-
-
-'''
-{
-    HTTP_100_CONTINUE
-    HTTP_101_SWITCHING_PROTOCOLS
-    HTTP_200_OK
-    HTTP_201_CREATED
-    HTTP_202_ACCEPTED
-    HTTP_203_NON_AUTHORITATIVE_INFORMATION
-    HTTP_204_NO_CONTENT
-    HTTP_205_RESET_CONTENT
-    HTTP_206_PARTIAL_CONTENT
-    HTTP_207_MULTI_STATUS
-    HTTP_300_MULTIPLE_CHOICES
-    HTTP_301_MOVED_PERMANENTLY
-    HTTP_302_FOUND
-    HTTP_303_SEE_OTHER
-    HTTP_304_NOT_MODIFIED
-    HTTP_305_USE_PROXY
-    HTTP_306_RESERVED
-    HTTP_307_TEMPORARY_REDIRECT
-    HTTP_400_BAD_REQUEST
-    HTTP_401_UNAUTHORIZED
-    HTTP_402_PAYMENT_REQUIRED
-    HTTP_403_FORBIDDEN
-    HTTP_404_NOT_FOUND
-    HTTP_405_METHOD_NOT_ALLOWED
-    HTTP_406_NOT_ACCEPTABLE
-    HTTP_407_PROXY_AUTHENTICATION_REQUIRED
-    HTTP_408_REQUEST_TIMEOUT
-    HTTP_409_CONFLICT
-    HTTP_410_GONE
-    HTTP_411_LENGTH_REQUIRED
-    HTTP_412_PRECONDITION_FAILED
-    HTTP_413_REQUEST_ENTITY_TOO_LARGE
-    HTTP_414_REQUEST_URI_TOO_LONG
-    HTTP_415_UNSUPPORTED_MEDIA_TYPE
-    HTTP_416_REQUESTED_RANGE_NOT_SATISFIABLE
-    HTTP_417_EXPECTATION_FAILED
-    HTTP_422_UNPROCESSABLE_ENTITY
-    HTTP_423_LOCKED
-    HTTP_424_FAILED_DEPENDENCY
-    HTTP_428_PRECONDITION_REQUIRED
-    HTTP_429_TOO_MANY_REQUESTS
-    HTTP_431_REQUEST_HEADER_FIELDS_TOO_LARGE
-    HTTP_451_UNAVAILABLE_FOR_LEGAL_REASONS
-    HTTP_500_INTERNAL_SERVER_ERROR
-    HTTP_501_NOT_IMPLEMENTED
-    HTTP_502_BAD_GATEWAY
-    HTTP_503_SERVICE_UNAVAILABLE
-    HTTP_504_GATEWAY_TIMEOUT
-    HTTP_505_HTTP_VERSION_NOT_SUPPORTED
-    HTTP_507_INSUFFICIENT_STORAGE
-    HTTP_511_NETWORK_AUTHENTICATION_REQUIRED
-}
-'''
 
 
 @api_view(['GET'])
@@ -202,10 +152,19 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly,)
+    pagination_class = pagination.MyPageNumberPagination
+    authentication_classes = ()
+    permission_classes = (IsOwnerOrReadOnly, )
+    #filter_backends = (filters.OrderingFilter,)
+    #search_fields = ('name',)
+    #ordering_fields = ('create_time', 'name')
 
-    def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
+    # def perform_create(self, serializer):
+    #    serializer.save(owner=self.request.user)
+
+    def create(self, request, format=None):
+        # print(self.request.query_params)
+        return super().create(request, format)
 
 
 class ApiViewSet(viewsets.ModelViewSet):
@@ -217,6 +176,7 @@ class ApiViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def create(self, request, format=None):
+        # print(dir(request.META))
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             # now do not know frontend format, so just store it
@@ -224,8 +184,7 @@ class ApiViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             # format request.data(from frontend) to backend format
-            formater = parser.Formater(request.data)
-            data = formater.get_backend_api()
+            data = formater.get_backend_api(request.data)
             if data:
                 Api.objects.create(**data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -240,8 +199,7 @@ class ApiViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
             # format request.data(from frontend) to backend format
-            formater = parser.Formater(request.data)
-            data = formater.get_backend_api()
+            data = formater.get_backend_api(request.data)
             if data:
                 API.objects.filter(id=kwargs['pk']).update(**data)
                 return Response(serializer.data, response.HTTP_202_ACCEPTED)
@@ -277,8 +235,7 @@ class CaseViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             # format request.data(from frontend) to backend format
-            formater = parser.Formater(request.data)
-            data = formater.get_backend_case()
+            data = formater.get_backend_case(request.data)
             if data:
                 Case.objects.create(**data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -293,8 +250,7 @@ class CaseViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
             # format request.data(from frontend) to backend format
-            formater = parser.Formater(request.data)
-            data = formater.get_backend_case()
+            data = formater.get_backend_case(request.data)
             if data:
                 Case.objects.filter(id=kwargs['pk']).update(**data)
                 return Response(serializer.data, response.HTTP_202_ACCEPTED)
@@ -302,12 +258,21 @@ class CaseViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['get', 'post'])
     def run(self, request, pk=None):
-        print(self.basename)
-        return Response(rsp_msg.CASE_RUNNING)
+        case = self.get_object()
+        print('To run case: %s' % (case.name))
+        # format data to httprunner format
+        data = formater.get_httprunner_case(case)
+        if data:
+            result = task.run_case.delay(data, callback=None)
+            # CaseResult.objects.create(id=kwargs['pk'])
+            print(result)
+            return Response(rsp_msg.CASE_RUNNING)
+        else:
+            return Response(rsp_msg.CASE_NOT_EXIST)
 
-    @action.mapping.delete
+    # @run.mapping.delete
+    @action(detail=True, methods=['get', 'delete'])
     def cancel_run(self, request, pk=None):
-        print('run stop')
         return Response(rsp_msg.CASE_CANCEL)
 
 
@@ -327,8 +292,7 @@ class StepViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
             # format request.data(from frontend) to backend format
-            formater = parser.Formater(request.data)
-            data = formater.get_backend_step()
+            data = formater.get_backend_step(request.data)
             if data:
                 Step.objects.create(**data)
                 return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -343,8 +307,7 @@ class StepViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
 
             # format request.data(from frontend) to backend format
-            formater = parser.Formater(request.data)
-            data = formater.get_backend_step()
+            data = formater.get_backend_step(request.data)
             if data:
                 Step.objects.filter(id=kwargs['pk']).update(**data)
                 return Response(serializer.data, response.HTTP_202_ACCEPTED)

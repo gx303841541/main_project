@@ -5,9 +5,9 @@ from rest_framework import serializers
 
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
-    #my_apis = serializers.PrimaryKeyRelatedField(many=True, queryset=Api.objects.all())
-    #my_apis = ApiSerializer(many=True, read_only=True)
+    #owner = serializers.ReadOnlyField(source='owner.username')
+    # my_apis = serializers.PrimaryKeyRelatedField(many=True, queryset=Api.objects.all())
+    # my_apis = ApiSerializer(many=True, read_only=True)
     my_apis = serializers.HyperlinkedRelatedField(
         many=True, view_name='api-detail', queryset=Api.objects.all(), allow_null=True, required=False)
     my_suites = serializers.HyperlinkedRelatedField(
@@ -20,6 +20,7 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Project
         fields = '__all__'
+        # fields = ('url', 'id', 'owner', 'my_apis', 'my_suites', 'my_cases', 'my_configs')
 
     def create(self, *args, **kwargs):
         print(kwargs)
@@ -27,28 +28,28 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ApiSerializer(serializers.HyperlinkedModelSerializer):
-    #my_cases = serializers.PrimaryKeyRelatedField(many=True, queryset=Case.objects.all())
+    # my_cases = serializers.PrimaryKeyRelatedField(many=True, queryset=Case.objects.all())
     my_cases = serializers.HyperlinkedRelatedField(
         many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
-    #my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
+    # my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
 
-    '''json = serializers.SerializerMethodField()
+    json = serializers.SerializerMethodField()
 
     def get_json(self, obj):
-        parse = Parse(obj.body)
-        parse.parse_http()
-        return parse.testcase'''
+        return 'Fuck you'
 
     class Meta:
         model = Api
         fields = '__all__'
+        #fields = ('json', 'my_cases', 'name')
+        # depth = 2
 
 
 class SuiteSerializer(serializers.HyperlinkedModelSerializer):
-    #my_cases = serializers.PrimaryKeyRelatedField(many=True, queryset=Case.objects.all(), allow_null=True)
+    # my_cases = serializers.PrimaryKeyRelatedField(many=True, queryset=Case.objects.all(), allow_null=True)
     my_cases = serializers.HyperlinkedRelatedField(
         many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
-    #my_suiteresults = serializers.PrimaryKeyRelatedField(many=True, queryset=SuiteResult.objects.all())
+    # my_suiteresults = serializers.PrimaryKeyRelatedField(many=True, queryset=SuiteResult.objects.all())
     my_suiteresults = serializers.HyperlinkedRelatedField(
         many=True, view_name='suiteresult-detail', queryset=SuiteResult.objects.all(), allow_null=True, required=False)
 
@@ -58,10 +59,10 @@ class SuiteSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CaseSerializer(serializers.HyperlinkedModelSerializer):
-    #my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
+    # my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
     my_steps = serializers.HyperlinkedRelatedField(
         many=True, view_name='step-detail', queryset=Step.objects.all(), allow_null=True, required=False)
-    #my_caseresults = serializers.PrimaryKeyRelatedField(many=True, queryset=CaseResult.objects.all())
+    # my_caseresults = serializers.PrimaryKeyRelatedField(many=True, queryset=CaseResult.objects.all())
     my_caseresults = serializers.HyperlinkedRelatedField(
         many=True, view_name='caseresult-detail', queryset=CaseResult.objects.all(), allow_null=True, required=False)
 
@@ -71,7 +72,7 @@ class CaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class StepSerializer(serializers.HyperlinkedModelSerializer):
-    #my_stepresults = serializers.PrimaryKeyRelatedField(many=True, queryset=StepResult.objects.all())
+    # my_stepresults = serializers.PrimaryKeyRelatedField(many=True, queryset=StepResult.objects.all())
     my_stepresults = serializers.HyperlinkedRelatedField(
         many=True, view_name='stepresult-detail', queryset=StepResult.objects.all(), allow_null=False, required=False)
 
@@ -94,6 +95,7 @@ class StepResultSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = StepResult
         fields = '__all__'
+        read_only_fieids = ('content',)
 
 
 class SuiteResultSerializer(serializers.HyperlinkedModelSerializer):
@@ -111,7 +113,7 @@ class ConfigSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    #my_projects = serializers.PrimaryKeyRelatedField(many=True, queryset=Project.objects.all(), allow_null=True)
+    # my_projects = serializers.PrimaryKeyRelatedField(many=True, queryset=Project.objects.all(), allow_null=True)
     my_projects = serializers.StringRelatedField(many=True, allow_null=True)
 
     class Meta:

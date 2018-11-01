@@ -16,6 +16,12 @@ CASE_CANCEL = {
     "msg": "run case canceled!"
 }
 
+CASE_NOT_EXIST = {
+    "code": "0101",
+    "success": False,
+    "msg": "case not exist!"
+}
+
 
 PROJECT_EXISTS = {
     "code": "0101",
