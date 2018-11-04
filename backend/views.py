@@ -348,11 +348,23 @@ class SuiteViewSet(viewsets.GenericViewSet):
         suite = self.get_object()
         print('views to run suite: %s' % (suite.name))
         if suite:
-            task_id = task.run_suite.delay(suite=suite, request=request)
-            print(var(task_id))
+            task_result = task.run_suite.delay(suite=suite)
+
+            if task_result.status == 'SUCCESS':
+                pass
+            elif task_result.status == 'STARTED':
+                pass
+            elif task_result.status == 'PENDING':
+                pass
+            else:
+                pass
+                # print(task_result.get(timeout=1))
+                # print(task_result.result)
+            print(task_result.status)
+            print(task_result.traceback)
             rsp_msg.SUITE_RUNNING['task'] = {
-                'id': task_id,
-                'status': task_id.status
+                'id': task_result.id,
+                'status': task_result.status
             }
             return Response(rsp_msg.SUITE_RUNNING)
 

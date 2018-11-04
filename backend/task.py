@@ -6,14 +6,29 @@ from backend.httprunner.api import HttpRunner
 from backend.httprunner.logger import logger
 from backend.models import *
 from backend.utils import formater, pagination, rsp_msg
-from celery import shared_task, task
+from celery import Celery, shared_task, task
 from main_project import celery_app
 from rest_framework.reverse import reverse
 
+#celery_app = Celery('tasks', broker='amqp://guest@localhost//', backend='amqp://guest@localhost//')
+
 
 @task
-def run_suite(callback=None, dot_env_path=None, *, suite, request):
-    print("New task: to run suite %s" % (something_about_cases))
+def add(x, y):
+    print('12313')
+    return x + y
+
+
+@task
+def run_xxx(callback=None, dot_env_path=None):
+    print("New task: to run suite %s" % ('xxoo'))
+    return ('fuck you!')
+
+
+@celery_app.task(bind=True)
+def run_suite(self, callback=None, dot_env_path=None, *, suite):
+    print("New task: to run suite %s" % (suite.name))
+    time.sleep(10)
     timestamp = '_' + datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
     result = {
         'total': 0,
@@ -26,6 +41,7 @@ def run_suite(callback=None, dot_env_path=None, *, suite, request):
     for case in suite.my_cases.all().order_by('order'):
         case_result = run_case(case=case, request=None, return_caseresult_url=False, statistics=True)
         if case_result['success']:
+            result['total'] += 1
             for item in case_result['statistics']:
                 result[item] += case_result['statistics'][item]
         else:
@@ -35,6 +51,7 @@ def run_suite(callback=None, dot_env_path=None, *, suite, request):
     case_ressult = SuiteResult.objects.create(
         name=suite.name + timestamp, suite=suite, **result)
     print("suite result %s created!" % (suite.name + timestamp))
+    return result
 
 
 def run_case(callback=None, dot_env_path=None, return_caseresult_url=False, statistics=False, *, case, request):

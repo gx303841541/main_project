@@ -103,7 +103,7 @@ def get_httprunner_api(api_instance):
     if hasattr(api_instance, 'validate') and api_instance.validate:
         api['validate'] = _parser_validate(api_instance.validate)
 
-    print(convert_to_dictstr(api))
+    # print(convert_to_dictstr(api))
     return name, api
 
 

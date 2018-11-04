@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+import django_celery_results
 # celery config
 import djcelery
 from celery.schedules import crontab, timedelta
@@ -49,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'crispy_forms',
     'djcelery',
+    # 'django_celery_results',
 
 ]
 
@@ -161,7 +163,7 @@ CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 #BROKER_URL = 'redis://127.0.0.1:6379/0'
 BROKER_URL = 'amqp://guest@localhost//'
 #BROKER_URL = 'amqp://kobe:kobe@192.168.50.131:5672/vhost/'
-#CELERY_RESULT_BACKEND = 'amqp://guest@localhost//'
+CELERY_RESULT_BACKEND = 'amqp://guest@localhost//'
 #BROKER_TRANSPORT = 'redis'
 CELERY_IMPORTS = ('backend.task')
 CELERY_TIMEZONE = 'Asia/Shanghai'
