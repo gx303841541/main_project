@@ -2,10 +2,10 @@
 
 from unittest.case import SkipTest
 
-from httprunner import exceptions, logger, response, utils
-from httprunner.client import HttpSession
-from httprunner.compat import OrderedDict
-from httprunner.context import Context
+from backend.httprunner import exceptions, logger, response, utils
+from backend.httprunner.client import HttpSession
+from backend.httprunner.compat import OrderedDict
+from backend.httprunner.context import Context
 
 
 class Runner(object):
@@ -239,8 +239,8 @@ class Runner(object):
         for variable in output_variables_list:
             if variable not in variables_mapping:
                 logger.log_warning(
-                    "variable '{}' can not be found in variables mapping, failed to output!"\
-                        .format(variable)
+                    "variable '{}' can not be found in variables mapping, failed to output!"
+                    .format(variable)
                 )
                 continue
 

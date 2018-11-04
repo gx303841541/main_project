@@ -8,8 +8,8 @@ import os.path
 import string
 from datetime import datetime
 
-from httprunner import exceptions, logger
-from httprunner.compat import OrderedDict, basestring, is_py2
+from backend.httprunner import exceptions, logger
+from backend.httprunner.compat import OrderedDict, basestring, is_py2
 
 
 def remove_prefix(text, prefix):

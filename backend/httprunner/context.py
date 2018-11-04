@@ -2,19 +2,20 @@
 
 import copy
 
-from httprunner import exceptions, logger, parser, utils
-from httprunner.compat import OrderedDict
+from backend.httprunner import exceptions, logger, parser, utils
+from backend.httprunner.compat import OrderedDict
 
 
 class Context(object):
     """ Manages context functions and variables.
         context has two levels, testcase and teststep.
     """
+
     def __init__(self, variables=None, functions=None):
         """ init Context with testcase variables and functions.
         """
         # testcase level context
-        ## TESTCASE_SHARED_VARIABLES_MAPPING and TESTCASE_SHARED_FUNCTIONS_MAPPING will not change.
+        # TESTCASE_SHARED_VARIABLES_MAPPING and TESTCASE_SHARED_FUNCTIONS_MAPPING will not change.
         self.TESTCASE_SHARED_VARIABLES_MAPPING = variables or OrderedDict()
         self.TESTCASE_SHARED_FUNCTIONS_MAPPING = functions or OrderedDict()
 
@@ -150,8 +151,8 @@ class Context(object):
         # 5, regex string, e.g. "LB[\d]*(.*)RB[\d]*"
 
         if isinstance(check_item, (dict, list)) \
-            or parser.extract_variables(check_item) \
-            or parser.extract_functions(check_item):
+                or parser.extract_variables(check_item) \
+                or parser.extract_functions(check_item):
             # format 1/2/3
             check_value = self.eval_content(check_item)
         else:
@@ -190,7 +191,7 @@ class Context(object):
         expect_value = validator_dict["expect"]
 
         if (check_value is None or expect_value is None) \
-            and comparator not in ["is", "eq", "equals", "=="]:
+                and comparator not in ["is", "eq", "equals", "=="]:
             raise exceptions.ParamsError("Null value can only be compared with comparator: eq/equals/==")
 
         validate_msg = "validate: {} {} {}({})".format(

@@ -1,5 +1,8 @@
+import json
 import os
 import sys
+import time
+from datetime import datetime
 
 import backend.task as task
 import django_filters.rest_framework
@@ -146,7 +149,7 @@ class ProjectDetail(APIView):
 '''
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(viewsets.GenericViewSet):
     """
     此视图自动提供`list`，`create`，`retrieve`，`update`和`destroy`操作。
     """
@@ -155,16 +158,60 @@ class ProjectViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.MyPageNumberPagination
     authentication_classes = ()
     permission_classes = (IsOwnerOrReadOnly, )
-    #filter_backends = (filters.OrderingFilter,)
-    #search_fields = ('name',)
-    #ordering_fields = ('create_time', 'name')
+    # filter_backends = (filters.OrderingFilter,)
+    # search_fields = ('name',)
+    # ordering_fields = ('create_time', 'name')
 
     # def perform_create(self, serializer):
     #    serializer.save(owner=self.request.user)
 
+    def list(self, request, format=None):
+        projects = self.get_queryset()
+        page_projects = self.paginate_queryset(projects)
+        serializer = self.get_serializer(page_projects, many=True)
+        return self.get_paginated_response(serializer.data)
+
     def create(self, request, format=None):
-        # print(self.request.query_params)
-        return super().create(request, format)
+        print(dir(request.META))
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(rsp_msg.PROJECT_CREATE_SUCCESS)
+
+            # format request.data(from frontend) to backend format
+            data = formater.get_backend_api(request.data)
+            if data:
+                Project.objects.create(**data)
+                return Response(rsp_msg.PROJECT_CREATE_SUCCESS)
+        rsp_msg.PROJECT_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.PROJECT_FAIL)
+
+    def retrieve(self, request, *args, **kwargs):
+        project = self.get_object()
+        serializer = self.get_serializer(project, many=False)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        project = self.get_object()
+        serializer = self.get_serializer(project, data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(rsp_msg.PROJECT_UPDATE_SUCCESS)
+
+            # format request.data(from frontend) to backend format
+            data = formater.get_backend_api(request.data)
+            if data:
+                Project.objects.filter(id=kwargs['pk']).update(**data)
+                return Response(rsp_msg.PROJECT_UPDATE_SUCCESS)
+        rsp_msg.PROJECT_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.PROJECT_FAIL)
+
+    def destroy(self, request, *args, **kwargs):
+        project = self.get_object()
+        project.delete()
+        return Response(rsp_msg.PROJECT_DELETE_SUCCESS)
 
 
 class ApiViewSet(viewsets.ModelViewSet):
@@ -173,22 +220,45 @@ class ApiViewSet(viewsets.ModelViewSet):
     """
     queryset = Api.objects.all()
     serializer_class = ApiSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = pagination.MyPageNumberPagination
+    authentication_classes = ()
+    permission_classes = (IsOwnerOrReadOnly, )
+
+    def list(self, request, format=None):
+        project_id = request.query_params.get('project_id', None)
+        name = request.query_params.get('name', None)
+        if name:
+            api = self.get_queryset().get(name=name)
+            serializer = self.get_serializer(api, many=False)
+            return Response(serializer.data)
+        elif project_id:
+            apis = self.get_queryset().filter(project__id=project_id)
+        else:
+            apis = self.get_queryset()
+
+        page_apis = self.paginate_queryset(apis)
+        serializer = self.get_serializer(page_apis, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request, format=None):
-        # print(dir(request.META))
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             # now do not know frontend format, so just store it
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(rsp_msg.API_CREATE_SUCCESS)
 
             # format request.data(from frontend) to backend format
             data = formater.get_backend_api(request.data)
             if data:
                 Api.objects.create(**data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(rsp_msg.API_CREATE_SUCCESS)
+        rsp_msg.API_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.API_FAIL)
+
+    def retrieve(self, request, *args, **kwargs):
+        api = self.get_object()
+        serializer = self.get_serializer(api, many=False)
+        return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         api = self.get_object()
@@ -196,27 +266,103 @@ class ApiViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             # now do not know frontend format, so just store it
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            return Response(rsp_msg.API_UPDATE_SUCCESS)
 
             # format request.data(from frontend) to backend format
             data = formater.get_backend_api(request.data)
             if data:
                 API.objects.filter(id=kwargs['pk']).update(**data)
-                return Response(serializer.data, response.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(rsp_msg.API_UPDATE_SUCCESS)
+        rsp_msg.API_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.API_FAIL)
+
+    def destroy(self, request, *args, **kwargs):
+        api = self.get_object()
+        api.delete()
+        return Response(rsp_msg.API_DELETE_SUCCESS)
 
 
-class SuiteViewSet(viewsets.ModelViewSet):
+class SuiteViewSet(viewsets.GenericViewSet):
     """
     此视图自动提供`list`，`create`，`retrieve`，`update`和`destroy`操作。
     """
     queryset = Suite.objects.all()
     serializer_class = SuiteSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = pagination.MyPageNumberPagination
+    authentication_classes = ()
+    permission_classes = (IsOwnerOrReadOnly, )
+
+    def list(self, request, format=None):
+        project_id = request.query_params.get('project_id', None)
+        if project_id:
+            suites = self.get_queryset().filter(project__id=project_id)
+        else:
+            suites = self.get_queryset()
+        page_suites = self.paginate_queryset(suites)
+        serializer = self.get_serializer(page_suites, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def create(self, request, format=None):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(rsp_msg.SUITE_CREATE_SUCCESS)
+
+            # format request.data(from frontend) to backend format
+            data = formater.get_backend_api(request.data)
+            if data:
+                Suite.objects.create(**data)
+                return Response(rsp_msg.SUITE_CREATE_SUCCESS)
+        rsp_msg.SUITE_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.SUITE_FAIL)
+
+    def retrieve(self, request, *args, **kwargs):
+        suite = self.get_object()
+        serializer = self.get_serializer(suite, many=False)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        suite = self.get_object()
+        serializer = self.get_serializer(suite, data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(rsp_msg.SUITE_UPDATE_SUCCESS)
+
+            # format request.data(from frontend) to backend format
+            data = formater.get_backend_api(request.data)
+            if data:
+                Suite.objects.filter(id=kwargs['pk']).update(**data)
+                return Response(rsp_msg.SUITE_UPDATE_SUCCESS)
+        rsp_msg.SUITE_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.SUITE_FAIL)
+
+    def destroy(self, request, *args, **kwargs):
+        suite = self.get_object()
+        suite.delete()
+        return Response(rsp_msg.SUITE_DELETE_SUCCESS)
 
     @action(detail=True, methods=['get', 'post'])
     def run(self, request, pk=None):
-        return Response({'status': 'suite runing！'})
+        suite = self.get_object()
+        print('views to run suite: %s' % (suite.name))
+        if suite:
+            task_id = task.run_suite.delay(suite=suite, request=request)
+            print(var(task_id))
+            rsp_msg.SUITE_RUNNING['task'] = {
+                'id': task_id,
+                'status': task_id.status
+            }
+            return Response(rsp_msg.SUITE_RUNNING)
+
+        else:
+            return Response(rsp_msg.SUITE_NOT_EXIST)
+
+    # @run.mapping.delete
+    @action(detail=True, methods=['get', 'delete'])
+    def cancel_run(self, request, pk=None):
+        return Response(rsp_msg.CASE_CANCEL)
 
 
 class CaseViewSet(viewsets.ModelViewSet):
@@ -225,21 +371,45 @@ class CaseViewSet(viewsets.ModelViewSet):
     """
     queryset = Case.objects.all()
     serializer_class = CaseSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = pagination.MyPageNumberPagination
+    authentication_classes = ()
+    permission_classes = (IsOwnerOrReadOnly, )
+
+    def list(self, request, format=None):
+        project_id = request.query_params.get('project_id', None)
+        name = request.query_params.get('name', None)
+        if name:
+            case = self.get_queryset().get(name=name)
+            serializer = self.get_serializer(case, many=False)
+            return Response(serializer.data)
+        elif project_id:
+            cases = self.get_queryset().filter(project__id=project_id)
+        else:
+            cases = self.get_queryset()
+
+        page_cases = self.paginate_queryset(cases)
+        serializer = self.get_serializer(page_cases, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def create(self, request, format=None):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             # now do not know frontend format, so just store it
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(rsp_msg.CASE_CREATE_SUCCESS)
 
             # format request.data(from frontend) to backend format
             data = formater.get_backend_case(request.data)
             if data:
                 Case.objects.create(**data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(rsp_msg.CASE_CREATE_SUCCESS)
+        rsp_msg.CASE_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.CASE_FAIL)
+
+    def retrieve(self, request, *args, **kwargs):
+        case = self.get_object()
+        serializer = self.get_serializer(case, many=False)
+        return Response(serializer.data)
 
     def update(self, request, *args, **kwargs):
         case = self.get_object()
@@ -247,28 +417,26 @@ class CaseViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             # now do not know frontend format, so just store it
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
+            return Response(rsp_msg.CASE_UPDATE_SUCCESS)
 
             # format request.data(from frontend) to backend format
             data = formater.get_backend_case(request.data)
             if data:
                 Case.objects.filter(id=kwargs['pk']).update(**data)
-                return Response(serializer.data, response.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(rsp_msg.CASE_UPDATE_SUCCESS)
+        rsp_msg.CASE_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.CASE_FAIL)
+
+    def destroy(self, request, *args, **kwargs):
+        case = self.get_object()
+        case.delete()
+        return Response(rsp_msg.CASE_DELETE_SUCCESS)
 
     @action(detail=True, methods=['get', 'post'])
     def run(self, request, pk=None):
         case = self.get_object()
-        print('To run case: %s' % (case.name))
-        # format data to httprunner format
-        data = formater.get_httprunner_case(case)
-        if data:
-            result = task.run_case.delay(data, callback=None)
-            # CaseResult.objects.create(id=kwargs['pk'])
-            print(result)
-            return Response(rsp_msg.CASE_RUNNING)
-        else:
-            return Response(rsp_msg.CASE_NOT_EXIST)
+        print('views to run case: %s' % (case.name))
+        return Response(task.run_case(case=case, request=request, return_caseresult_url=True, statistics=False))
 
     # @run.mapping.delete
     @action(detail=True, methods=['get', 'delete'])
@@ -282,7 +450,6 @@ class StepViewSet(viewsets.ModelViewSet):
     """
     queryset = Step.objects.all()
     serializer_class = StepSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
     def create(self, request, format=None):
         serializer = self.get_serializer(data=request.data)
@@ -320,7 +487,6 @@ class CaseResultViewSet(viewsets.ModelViewSet):
     """
     queryset = CaseResult.objects.all()
     serializer_class = CaseResultSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class StepResultViewSet(viewsets.ModelViewSet):
@@ -329,7 +495,6 @@ class StepResultViewSet(viewsets.ModelViewSet):
     """
     queryset = StepResult.objects.all()
     serializer_class = StepResultSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     pagination_class = PageNumberPagination
 
 
@@ -339,7 +504,6 @@ class SuiteResultViewSet(viewsets.ModelViewSet):
     """
     queryset = SuiteResult.objects.all()
     serializer_class = SuiteResultSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
 
 
 class ConfigViewSet(viewsets.ModelViewSet):
@@ -348,4 +512,3 @@ class ConfigViewSet(viewsets.ModelViewSet):
     """
     queryset = Config.objects.all()
     serializer_class = ConfigSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)

@@ -33,10 +33,10 @@ class ApiSerializer(serializers.HyperlinkedModelSerializer):
         many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
     # my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
 
-    json = serializers.SerializerMethodField()
+    #json = serializers.SerializerMethodField()
 
-    def get_json(self, obj):
-        return 'Fuck you'
+    # def get_json(self, obj):
+    #    return 'Fuck you'
 
     class Meta:
         model = Api
@@ -46,9 +46,9 @@ class ApiSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SuiteSerializer(serializers.HyperlinkedModelSerializer):
-    # my_cases = serializers.PrimaryKeyRelatedField(many=True, queryset=Case.objects.all(), allow_null=True)
-    my_cases = serializers.HyperlinkedRelatedField(
-        many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
+    my_cases = serializers.SlugRelatedField(many=True, queryset=Case.objects.all(), slug_field='name', allow_null=True)
+    # my_cases = serializers.HyperlinkedRelatedField(
+    #    many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
     # my_suiteresults = serializers.PrimaryKeyRelatedField(many=True, queryset=SuiteResult.objects.all())
     my_suiteresults = serializers.HyperlinkedRelatedField(
         many=True, view_name='suiteresult-detail', queryset=SuiteResult.objects.all(), allow_null=True, required=False)
@@ -61,7 +61,7 @@ class SuiteSerializer(serializers.HyperlinkedModelSerializer):
 class CaseSerializer(serializers.HyperlinkedModelSerializer):
     # my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
     my_steps = serializers.HyperlinkedRelatedField(
-        many=True, view_name='step-detail', queryset=Step.objects.all(), allow_null=True, required=False)
+        many=True, view_name='step-detail', queryset=Step.objects.all().order_by('-order'), allow_null=True, required=False)
     # my_caseresults = serializers.PrimaryKeyRelatedField(many=True, queryset=CaseResult.objects.all())
     my_caseresults = serializers.HyperlinkedRelatedField(
         many=True, view_name='caseresult-detail', queryset=CaseResult.objects.all(), allow_null=True, required=False)

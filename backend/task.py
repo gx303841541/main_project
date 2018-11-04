@@ -1,25 +1,95 @@
+import json
 import time
+from datetime import datetime
 
 from backend.httprunner.api import HttpRunner
-from backend.httprunner.cli import main_hrun
 from backend.httprunner.logger import logger
+from backend.models import *
+from backend.utils import formater, pagination, rsp_msg
 from celery import shared_task, task
 from main_project import celery_app
+from rest_framework.reverse import reverse
 
 
 @task
-def run_case(something_about_cases, callback=None, dot_env_path=None):
-    print("To run: %s" % (something_about_cases))
-    try:
-        runner = HttpRunner()
-        runner.run(something_about_cases, )
-    except Exception:
-        print("!!!!!!!!!! exception stage: {} !!!!!!!!!!".format(runner.exception_stage))
-        raise
+def run_suite(callback=None, dot_env_path=None, *, suite, request):
+    print("New task: to run suite %s" % (something_about_cases))
+    timestamp = '_' + datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
+    result = {
+        'total': 0,
+        'successes': 0,
+        'failures': 0,
+        'skipped': 0,
+        'errors': 0,
+        'unknow': 0
+    }
+    for case in suite.my_cases.all().order_by('order'):
+        case_result = run_case(case=case, request=None, return_caseresult_url=False, statistics=True)
+        if case_result['success']:
+            for item in case_result['statistics']:
+                result[item] += case_result['statistics'][item]
+        else:
+            result['total'] += 1
+            result['errors'] += 1
 
-    # runner.gen_html_report(
-    #    html_report_name=args.html_report_name,
-    #    html_report_template=args.html_report_template
-    # )
-    print(runner.summary)
-    return runner.summary
+    case_ressult = SuiteResult.objects.create(
+        name=suite.name + timestamp, suite=suite, **result)
+    print("suite result %s created!" % (suite.name + timestamp))
+
+
+def run_case(callback=None, dot_env_path=None, return_caseresult_url=False, statistics=False, *, case, request):
+    # format data to httprunner format
+    data = formater.get_httprunner_case(case)
+    if data:
+        try:
+            timestamp = '_' + datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
+            runner = HttpRunner()
+            runner.run(data, )
+            print(runner.summary)
+            # runner.gen_html_report(html_report_name='report.html')
+            records = runner.summary['details'][0].pop('records')
+            case_ressult = CaseResult.objects.create(
+                name=case.name + timestamp, content=json.dumps(formater.bytes_to_str(runner.summary)), case=case)
+            print("case result %s created!" % (case.name + timestamp))
+
+            steps = case.my_steps.all().order_by('order')
+            for step in steps:
+                step_result = StepResult.objects.create(
+                    name=step.name + timestamp, content=json.dumps(formater.bytes_to_str(records.pop(0))), caseresult=case_ressult, step=step)
+                print("step result %s created!" % (step.name + timestamp))
+
+            if return_caseresult_url:
+                rsp_msg.CASE_RUN_SUCCESS['result'] = reverse(
+                    'caseresult-detail', args=[case_ressult.pk], request=request)
+
+            if statistics:
+                successes = 0
+                failures = 0
+                skipped = 0
+                errors = 0
+                unknow = 0
+                if runner.summary['success']:
+                    successes = 1
+                elif runner.summary['stat']['failures']:
+                    failures = 1
+                elif runner.summary['stat']['skipped']:
+                    skipped = 1
+                elif runner.summary['stat']['errors']:
+                    errors = 1
+                else:
+                    unknow = 1
+                rsp_msg.CASE_RUN_SUCCESS['statistics'] = {
+                    'successes': successes,
+                    'failures': failures,
+                    'skipped': skipped,
+                    'errors': errors,
+                    'unknow': unknow
+                }
+            return (rsp_msg.CASE_RUN_SUCCESS)
+
+        except Exception as e:
+            rsp_msg.CASE_RUN_FAIL['msg'] = "[%s]: %s" % (runner.exception_stage, str(e))
+            return (rsp_msg.CASE_RUN_FAIL)
+    else:
+        rsp_msg.CASE_RUN_FAIL['msg'] = "case format invalid!"
+        return (rsp_msg.CASE_RUN_FAIL)

@@ -137,6 +137,7 @@ class LoginView(APIView):
         else:
             LOGIN_SUCCESS["token"] = token
             LOGIN_SUCCESS["user"] = username
+            LOGIN_SUCCESS["url"] = reverse('userinfo-detail', args=[user.pk], request=request)
             return Response(LOGIN_SUCCESS)
 
 

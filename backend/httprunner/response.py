@@ -3,10 +3,11 @@
 import json
 import re
 
-from httprunner import exceptions, logger, utils
-from httprunner.compat import OrderedDict, basestring, is_py2
 from requests.models import PreparedRequest
 from requests.structures import CaseInsensitiveDict
+
+from backend.httprunner import exceptions, logger, utils
+from backend.httprunner.compat import OrderedDict, basestring, is_py2
 
 text_extractor_regexp_compile = re.compile(r".*\(.*\).*")
 
@@ -24,7 +25,7 @@ class ResponseObject(object):
             if key == "json":
                 value = self.resp_obj.json()
             else:
-                value =  getattr(self.resp_obj, key)
+                value = getattr(self.resp_obj, key)
 
             self.__dict__[key] = value
             return value

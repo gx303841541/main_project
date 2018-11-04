@@ -4,8 +4,9 @@ import ast
 import os
 import re
 
-from httprunner import exceptions, utils
-from httprunner.compat import basestring, builtin_str, numeric_types, str
+from backend.httprunner import exceptions, utils
+from backend.httprunner.compat import (basestring, builtin_str, numeric_types,
+                                       str)
 
 variable_regexp = r"\$([\w_]+)"
 function_regexp = r"\$\{([\w_]+\([\$\w\.\-/_ =,]*\))\}"
@@ -255,6 +256,7 @@ def substitute_variables(content, variables_mapping):
 
     return content
 
+
 def parse_parameters(parameters, variables_mapping, functions_mapping):
     """ parse parameters and generate cartesian product.
 
@@ -322,7 +324,7 @@ def parse_parameters(parameters, variables_mapping, functions_mapping):
 
 
 ###############################################################################
-##  parse content with variables and functions mapping
+# parse content with variables and functions mapping
 ###############################################################################
 
 def get_builtin_item(item_type, item_name):
@@ -337,7 +339,7 @@ def get_builtin_item(item_type, item_name):
 
     """
     # override built_in module with debugtalk.py module
-    from httprunner import loader
+    from backend.httprunner import loader
     built_in_module = loader.load_builtin_module()
 
     if item_type == "variables":
@@ -436,7 +438,7 @@ def parse_string_functions(content, variables_mapping, functions_mapping):
         kwargs = parse_data(kwargs, variables_mapping, functions_mapping)
 
         if func_name in ["parameterize", "P"]:
-            from httprunner import loader
+            from backend.httprunner import loader
             eval_value = loader.load_csv_file(*args, **kwargs)
         else:
             func = get_mapping_function(func_name, functions_mapping)

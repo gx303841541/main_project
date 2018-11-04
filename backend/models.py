@@ -63,7 +63,7 @@ class Api(BaseTable):
     variables = models.TextField("variables", null=True, blank=True)
     api_url = models.CharField("api_url", null=False, max_length=50)
     method = models.CharField("method", choices=method_map, default=1, max_length=50)
-    header = models.TextField("header", null=True)
+    headers = models.TextField("headers", null=True)
     data = models.TextField("data", null=True, blank=True)
     json = models.TextField("json", null=True, blank=True)
     params = models.TextField("params", null=True, blank=True)
@@ -98,11 +98,11 @@ class Case(BaseTable):
     parameters = models.TextField("parameters", null=True, blank=True)
     variables = models.TextField("variables", null=True, blank=True)
     base_url = models.CharField("base_url", null=False, max_length=50)
-    header = models.TextField("header", null=True, blank=True)
+    headers = models.TextField("headers", null=True, blank=True)
     order = models.IntegerField("order", default=99)
 
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='my_cases', null=True)
-    suites = models.ManyToManyField(Suite, related_name='my_cases')
+    suites = models.ManyToManyField(Suite, related_name='my_cases', null=True)
     # Does apis needed?
     apis = models.ManyToManyField(Api, related_name='my_cases')
 
@@ -112,6 +112,7 @@ class Case(BaseTable):
     class Meta:
         verbose_name = "case"
         ordering = ('-create_time', 'name', )
+        #unique_together = (("name", "suites"),)
 
 
 # Step model
@@ -169,9 +170,11 @@ class SuiteResult(BaseTable):
     name = models.CharField("name", null=False, max_length=100, unique=True)
     content = models.TextField("content", null=True, blank=True)
     total = models.IntegerField("total cases", default=0)
-    pass_nu = models.IntegerField("pass cases", default=0)
-    fail_nu = models.IntegerField("fail cases", default=0)
-    skip_nu = models.IntegerField("skiped cases", default=0)
+    successes = models.IntegerField("pass cases", default=0)
+    failures = models.IntegerField("fail cases", default=0)
+    skipped = models.IntegerField("skiped cases", default=0)
+    errors = models.IntegerField("error cases", default=0)
+    unknow = models.IntegerField("unknow cases", default=0)
     end_time = models.DateTimeField('end time', auto_now=True)
 
     suite = models.ForeignKey(Suite, on_delete=models.CASCADE, related_name='my_suiteresults')

@@ -5,11 +5,12 @@ import time
 
 import requests
 import urllib3
-from httprunner import logger
-from httprunner.exceptions import ParamsError
 from requests import Request, Response
 from requests.exceptions import (InvalidSchema, InvalidURL, MissingSchema,
                                  RequestException)
+
+from backend.httprunner import logger
+from backend.httprunner.exceptions import ParamsError
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -37,6 +38,7 @@ class HttpSession(requests.Session):
     part of the URL will be prepended with the HttpSession.base_url which is normally inherited
     from a HttpRunner class' host property.
     """
+
     def __init__(self, base_url=None, *args, **kwargs):
         super(HttpSession, self).__init__(*args, **kwargs)
         self.base_url = base_url if base_url else ""
@@ -163,7 +165,8 @@ class HttpSession(requests.Session):
         # get the length of the content, but if the argument stream is set to True, we take
         # the size from the content-length header, in order to not trigger fetching of the body
         if kwargs.get("stream", False):
-            self.meta_data["response"]["content_size"] = int(self.meta_data["response"]["headers"].get("content-length") or 0)
+            self.meta_data["response"]["content_size"] = int(
+                self.meta_data["response"]["headers"].get("content-length") or 0)
         else:
             self.meta_data["response"]["content_size"] = len(response.content or "")
 

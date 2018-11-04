@@ -1,0 +1,2684 @@
+<head>
+  <meta content="text/html; charset=utf-8" http-equiv="content-type" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>report.html - TestReport</title>
+  <style>
+    body {
+      background-color: #f2f2f2;
+      color: #333;
+      margin: 0 auto;
+      width: 960px;
+    }
+    #summary {
+      width: 960px;
+      margin-bottom: 20px;
+    }
+    #summary th {
+      background-color: skyblue;
+      padding: 5px 12px;
+    }
+    #summary td {
+      background-color: lightblue;
+      text-align: center;
+      padding: 4px 8px;
+    }
+    .details {
+      width: 960px;
+      margin-bottom: 20px;
+    }
+    .details th {
+      background-color: skyblue;
+      padding: 5px 12px;
+    }
+    .details tr .passed {
+      background-color: lightgreen;
+    }
+    .details tr .failed {
+      background-color: red;
+    }
+    .details tr .unchecked {
+      background-color: gray;
+    }
+    .details td {
+      background-color: lightblue;
+      padding: 5px 12px;
+    }
+    .details .detail {
+      background-color: lightgrey;
+      font-size: smaller;
+      padding: 5px 10px;
+      text-align: center;
+    }
+    .details .success {
+      background-color: greenyellow;
+    }
+    .details .error {
+      background-color: red;
+    }
+    .details .failure {
+      background-color: salmon;
+    }
+    .details .skipped {
+      background-color: gray;
+    }
+
+    .button {
+      font-size: 1em;
+      padding: 6px;
+      width: 4em;
+      text-align: center;
+      background-color: #06d85f;
+      border-radius: 20px/50px;
+      cursor: pointer;
+      transition: all 0.3s ease-out;
+    }
+    a.button{
+      color: gray;
+      text-decoration: none;
+    }
+    .button:hover {
+      background: #2cffbd;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0, 0, 0, 0.7);
+      transition: opacity 500ms;
+      visibility: hidden;
+      opacity: 0;
+    }
+    .overlay:target {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .popup {
+      margin: 70px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      width: 50%;
+      position: relative;
+      transition: all 3s ease-in-out;
+    }
+
+    .popup h2 {
+      margin-top: 0;
+      color: #333;
+      font-family: Tahoma, Arial, sans-serif;
+    }
+    .popup .close {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      transition: all 200ms;
+      font-size: 30px;
+      font-weight: bold;
+      text-decoration: none;
+      color: #333;
+    }
+    .popup .close:hover {
+      color: #06d85f;
+    }
+    .popup .content {
+      max-height: 80%;
+      overflow: auto;
+      text-align: left;
+    }
+
+    @media screen and (max-width: 700px) {
+      .box {
+        width: 70%;
+      }
+      .popup {
+        width: 70%;
+      }
+    }
+
+  </style>
+</head>
+
+<body>
+  <h1>Test Report: report.html</h1>
+
+  <h2>Summary</h2>
+  <table id="summary">
+
+    <tr>
+      <th>START AT</th>
+      <td colspan="4">2018-11-02 05:44:58</td>
+    </tr>
+    <tr>
+      <th>DURATION</th>
+      <td colspan="4">1.097 seconds</td>
+    </tr>
+    <tr>
+      <th>PLATFORM</th>
+      <td>HttpRunner 1.5.14 </td>
+      <td>CPython 3.5.2 </td>
+      <td colspan="2">Linux-4.13.0-38-generic-i686-with-Ubuntu-16.04-xenial</td>
+    </tr>
+    <tr>
+      <th>TOTAL</th>
+      <th>SUCCESS</th>
+      <th>FAILED</th>
+      <th>ERROR</th>
+      <th>SKIPPED</th>
+      <!-- <th>ExpectedFailure</th>
+      <th>UnexpectedSuccess</th> -->
+    </tr>
+    <tr>
+      <td>8</td>
+      <td>0</td>
+      <td>8</td>
+      <td>0</td>
+      <td>0</td>
+      <!-- <td>0</td>
+      <td>0</td> -->
+    </tr>
+  </table>
+
+  <h2>Details</h2>
+
+  
+  
+  <h3>case1</h3>
+  <table id="suite_1" class="details">
+    <tr>
+      <th>base_url</th>
+      <td colspan="2">http://127.0.0.1:5000</td>
+      <th colspan="2" class="detail">
+        <a class="button" href="#suite_output_1">parameters & output</a>
+        <div id="suite_output_1" class="overlay">
+            <div class="popup">
+                <h2>Parameters and Output</h2>
+                <a class="close" href="#suite_1">&times;</a>
+                <div class="content">
+                  <div style="overflow: auto">
+                      <table>
+                        <tr>
+                          <th>variables</th>
+                          <th>output</th>
+                        </tr>
+                        
+                      </table>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 0</td>
+      <td>FAILED: 2</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    <tr id="record_1_1">
+      <th class="failure" style="width:5em;">failure</td>
+      <td colspan="2">get token</td>
+      <td style="text-align:center;width:6em;">59.23 ms</td>
+      <td class="detail">
+
+        <a class="button" href="#popup_log_1_1">log</a>
+        <div id="popup_log_1_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_1_1">&times;</a>
+
+            <div class="content">
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>json</th>
+                      <td>
+                        
+                          {'sign': '95e2a4611be501859d34d9dc879aaf0622f797ae'}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;sign&#34;: &#34;95e2a4611be501859d34d9dc879aaf0622f797ae&#34;}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>os_platform</strong>: ios
+                          </div>
+                          
+                          <div>
+                            <strong>app_version</strong>: 2.8.6
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 52
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>device_sn</strong>: AXUjvgkx0fvmPze
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>user_agent</strong>: iOS/10.3
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.18.4
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>start_timestamp</th>
+                      <td>
+                        
+                          1541137498.149627
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1:5000/api/get-token
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 46
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 02 Nov 2018 05:44:58 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.14.1 Python/3.5.2
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1:5000/api/get-token
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>content</th>
+                        <td>
+                          
+                            
+                              <pre>{&#34;success&#34;: true, &#34;token&#34;: &#34;53aYmg1rCEIGL5qT&#34;}</pre>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                        
+                  </table>
+              </div>
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>46</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>59.23</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>26.891</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+          <a class="button" href="#popup_attachment_1_1">traceback</a>
+          <div id="popup_attachment_1_1" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_1_1">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 59, in test
+    test_runner.run_test(teststep_dict)
+backend.httprunner.exceptions.ValidationFailure: validate: content.success equals true(str)	==> fail
+True(bool) equals true(str)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 61, in test
+    self.fail(str(ex))
+AssertionError: validate: content.success equals true(str)	==> fail
+True(bool) equals true(str)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+    
+    <tr id="record_1_2">
+      <th class="failure" style="width:5em;">failure</td>
+      <td colspan="2">get user</td>
+      <td style="text-align:center;width:6em;">16.53 ms</td>
+      <td class="detail">
+
+        <a class="button" href="#popup_log_1_2">log</a>
+        <div id="popup_log_1_2" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_1_2">&times;</a>
+
+            <div class="content">
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>json</th>
+                      <td>
+                        
+                          {'password': '123456', 'name': 'user1'}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;password&#34;: &#34;123456&#34;, &#34;name&#34;: &#34;user1&#34;}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 39
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>token</strong>: 53aYmg1rCEIGL5qT
+                          </div>
+                          
+                          <div>
+                            <strong>device_sn</strong>: AXUjvgkx0fvmPze
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.18.4
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>start_timestamp</th>
+                      <td>
+                        
+                          1541137498.2245483
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1:5000/api/users/1001
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 50
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 02 Nov 2018 05:44:58 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.14.1 Python/3.5.2
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            INTERNAL SERVER ERROR
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            500
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1:5000/api/users/1001
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            False
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>content</th>
+                        <td>
+                          
+                            
+                              <pre>{&#34;success&#34;: false, &#34;msg&#34;: &#34;user already existed.&#34;}</pre>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                        
+                  </table>
+              </div>
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>50</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>16.53</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>3.436</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+          <a class="button" href="#popup_attachment_1_2">traceback</a>
+          <div id="popup_attachment_1_2" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_1_2">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 59, in test
+    test_runner.run_test(teststep_dict)
+backend.httprunner.exceptions.ValidationFailure: validate: status_code equals 201(int)	==> fail
+500(int) equals 201(int)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 61, in test
+    self.fail(str(ex))
+AssertionError: validate: status_code equals 201(int)	==> fail
+500(int) equals 201(int)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>case1</h3>
+  <table id="suite_2" class="details">
+    <tr>
+      <th>base_url</th>
+      <td colspan="2">http://127.0.0.1:5000</td>
+      <th colspan="2" class="detail">
+        <a class="button" href="#suite_output_2">parameters & output</a>
+        <div id="suite_output_2" class="overlay">
+            <div class="popup">
+                <h2>Parameters and Output</h2>
+                <a class="close" href="#suite_2">&times;</a>
+                <div class="content">
+                  <div style="overflow: auto">
+                      <table>
+                        <tr>
+                          <th>variables</th>
+                          <th>output</th>
+                        </tr>
+                        
+                      </table>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 0</td>
+      <td>FAILED: 2</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    <tr id="record_2_1">
+      <th class="failure" style="width:5em;">failure</td>
+      <td colspan="2">get token</td>
+      <td style="text-align:center;width:6em;">12.29 ms</td>
+      <td class="detail">
+
+        <a class="button" href="#popup_log_2_1">log</a>
+        <div id="popup_log_2_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_2_1">&times;</a>
+
+            <div class="content">
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>json</th>
+                      <td>
+                        
+                          {'sign': '5631de90147de35f786557108392bc8c48b226f8'}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;sign&#34;: &#34;5631de90147de35f786557108392bc8c48b226f8&#34;}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>os_platform</strong>: ios
+                          </div>
+                          
+                          <div>
+                            <strong>app_version</strong>: 2.8.6
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 52
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>device_sn</strong>: ZYx6KnyjdcN8S6n
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>user_agent</strong>: iOS/10.3
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.18.4
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>start_timestamp</th>
+                      <td>
+                        
+                          1541137498.2653043
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1:5000/api/get-token
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 46
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 02 Nov 2018 05:44:58 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.14.1 Python/3.5.2
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1:5000/api/get-token
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>content</th>
+                        <td>
+                          
+                            
+                              <pre>{&#34;success&#34;: true, &#34;token&#34;: &#34;2ABWD0ewANNB3Lgk&#34;}</pre>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                        
+                  </table>
+              </div>
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>46</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>12.29</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>9.716</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+          <a class="button" href="#popup_attachment_2_1">traceback</a>
+          <div id="popup_attachment_2_1" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_2_1">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 59, in test
+    test_runner.run_test(teststep_dict)
+backend.httprunner.exceptions.ValidationFailure: validate: content.success equals true(str)	==> fail
+True(bool) equals true(str)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 61, in test
+    self.fail(str(ex))
+AssertionError: validate: content.success equals true(str)	==> fail
+True(bool) equals true(str)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+    
+    <tr id="record_2_2">
+      <th class="failure" style="width:5em;">failure</td>
+      <td colspan="2">get user</td>
+      <td style="text-align:center;width:6em;">12.22 ms</td>
+      <td class="detail">
+
+        <a class="button" href="#popup_log_2_2">log</a>
+        <div id="popup_log_2_2" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_2_2">&times;</a>
+
+            <div class="content">
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>json</th>
+                      <td>
+                        
+                          {'password': '123456', 'name': 'user1'}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;password&#34;: &#34;123456&#34;, &#34;name&#34;: &#34;user1&#34;}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 39
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>token</strong>: 2ABWD0ewANNB3Lgk
+                          </div>
+                          
+                          <div>
+                            <strong>device_sn</strong>: ZYx6KnyjdcN8S6n
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.18.4
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>start_timestamp</th>
+                      <td>
+                        
+                          1541137498.2829258
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1:5000/api/users/1002
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 50
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 02 Nov 2018 05:44:58 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.14.1 Python/3.5.2
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            INTERNAL SERVER ERROR
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            500
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1:5000/api/users/1002
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            False
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>content</th>
+                        <td>
+                          
+                            
+                              <pre>{&#34;success&#34;: false, &#34;msg&#34;: &#34;user already existed.&#34;}</pre>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                        
+                  </table>
+              </div>
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>50</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>12.22</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>5.695</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+          <a class="button" href="#popup_attachment_2_2">traceback</a>
+          <div id="popup_attachment_2_2" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_2_2">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 59, in test
+    test_runner.run_test(teststep_dict)
+backend.httprunner.exceptions.ValidationFailure: validate: status_code equals 201(int)	==> fail
+500(int) equals 201(int)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 61, in test
+    self.fail(str(ex))
+AssertionError: validate: status_code equals 201(int)	==> fail
+500(int) equals 201(int)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>case1</h3>
+  <table id="suite_3" class="details">
+    <tr>
+      <th>base_url</th>
+      <td colspan="2">http://127.0.0.1:5000</td>
+      <th colspan="2" class="detail">
+        <a class="button" href="#suite_output_3">parameters & output</a>
+        <div id="suite_output_3" class="overlay">
+            <div class="popup">
+                <h2>Parameters and Output</h2>
+                <a class="close" href="#suite_3">&times;</a>
+                <div class="content">
+                  <div style="overflow: auto">
+                      <table>
+                        <tr>
+                          <th>variables</th>
+                          <th>output</th>
+                        </tr>
+                        
+                      </table>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 0</td>
+      <td>FAILED: 2</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    <tr id="record_3_1">
+      <th class="failure" style="width:5em;">failure</td>
+      <td colspan="2">get token</td>
+      <td style="text-align:center;width:6em;">17.51 ms</td>
+      <td class="detail">
+
+        <a class="button" href="#popup_log_3_1">log</a>
+        <div id="popup_log_3_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_3_1">&times;</a>
+
+            <div class="content">
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>json</th>
+                      <td>
+                        
+                          {'sign': '2f9a3cbddcb60d68f7c28be6fc51b2bdb4d9cf87'}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;sign&#34;: &#34;2f9a3cbddcb60d68f7c28be6fc51b2bdb4d9cf87&#34;}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>os_platform</strong>: ios
+                          </div>
+                          
+                          <div>
+                            <strong>app_version</strong>: 2.8.6
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 52
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>device_sn</strong>: Rkfc6kY96rUVrYo
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>user_agent</strong>: iOS/10.3
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.18.4
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>start_timestamp</th>
+                      <td>
+                        
+                          1541137498.3216932
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1:5000/api/get-token
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 46
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 02 Nov 2018 05:44:58 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.14.1 Python/3.5.2
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1:5000/api/get-token
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>content</th>
+                        <td>
+                          
+                            
+                              <pre>{&#34;success&#34;: true, &#34;token&#34;: &#34;ioA1BfPHNciEvwPH&#34;}</pre>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                        
+                  </table>
+              </div>
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>46</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>17.51</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>15.123</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+          <a class="button" href="#popup_attachment_3_1">traceback</a>
+          <div id="popup_attachment_3_1" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_3_1">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 59, in test
+    test_runner.run_test(teststep_dict)
+backend.httprunner.exceptions.ValidationFailure: validate: content.success equals true(str)	==> fail
+True(bool) equals true(str)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 61, in test
+    self.fail(str(ex))
+AssertionError: validate: content.success equals true(str)	==> fail
+True(bool) equals true(str)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+    
+    <tr id="record_3_2">
+      <th class="failure" style="width:5em;">failure</td>
+      <td colspan="2">get user</td>
+      <td style="text-align:center;width:6em;">28.93 ms</td>
+      <td class="detail">
+
+        <a class="button" href="#popup_log_3_2">log</a>
+        <div id="popup_log_3_2" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_3_2">&times;</a>
+
+            <div class="content">
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>json</th>
+                      <td>
+                        
+                          {'password': '123456', 'name': 'user1'}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;password&#34;: &#34;123456&#34;, &#34;name&#34;: &#34;user1&#34;}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 39
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>token</strong>: ioA1BfPHNciEvwPH
+                          </div>
+                          
+                          <div>
+                            <strong>device_sn</strong>: Rkfc6kY96rUVrYo
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.18.4
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>start_timestamp</th>
+                      <td>
+                        
+                          1541137498.3611681
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1:5000/api/users/1003
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 50
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 02 Nov 2018 05:44:58 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.14.1 Python/3.5.2
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            INTERNAL SERVER ERROR
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            500
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1:5000/api/users/1003
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            False
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>content</th>
+                        <td>
+                          
+                            
+                              <pre>{&#34;success&#34;: false, &#34;msg&#34;: &#34;user already existed.&#34;}</pre>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                        
+                  </table>
+              </div>
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>50</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>28.93</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>8.239</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+          <a class="button" href="#popup_attachment_3_2">traceback</a>
+          <div id="popup_attachment_3_2" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_3_2">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 59, in test
+    test_runner.run_test(teststep_dict)
+backend.httprunner.exceptions.ValidationFailure: validate: status_code equals 201(int)	==> fail
+500(int) equals 201(int)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 61, in test
+    self.fail(str(ex))
+AssertionError: validate: status_code equals 201(int)	==> fail
+500(int) equals 201(int)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+  
+  <h3>case1</h3>
+  <table id="suite_4" class="details">
+    <tr>
+      <th>base_url</th>
+      <td colspan="2">http://127.0.0.1:5000</td>
+      <th colspan="2" class="detail">
+        <a class="button" href="#suite_output_4">parameters & output</a>
+        <div id="suite_output_4" class="overlay">
+            <div class="popup">
+                <h2>Parameters and Output</h2>
+                <a class="close" href="#suite_4">&times;</a>
+                <div class="content">
+                  <div style="overflow: auto">
+                      <table>
+                        <tr>
+                          <th>variables</th>
+                          <th>output</th>
+                        </tr>
+                        
+                      </table>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>TOTAL: 2</td>
+      <td>SUCCESS: 0</td>
+      <td>FAILED: 2</td>
+      <td>ERROR: 0</td>
+      <td>SKIPPED: 0</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <th colspan="2">Name</th>
+      <th>Response Time</th>
+      <th>Detail</th>
+    </tr>
+
+    
+    
+    <tr id="record_4_1">
+      <th class="failure" style="width:5em;">failure</td>
+      <td colspan="2">get token</td>
+      <td style="text-align:center;width:6em;">32.97 ms</td>
+      <td class="detail">
+
+        <a class="button" href="#popup_log_4_1">log</a>
+        <div id="popup_log_4_1" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_4_1">&times;</a>
+
+            <div class="content">
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>json</th>
+                      <td>
+                        
+                          {'sign': 'ad0c9a4ed38b4144ea0f6cf10a356b0a7734a29a'}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;sign&#34;: &#34;ad0c9a4ed38b4144ea0f6cf10a356b0a7734a29a&#34;}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>os_platform</strong>: ios
+                          </div>
+                          
+                          <div>
+                            <strong>app_version</strong>: 2.8.6
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 52
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>device_sn</strong>: h6f1ZO3V6QvgFQu
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>user_agent</strong>: iOS/10.3
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.18.4
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>start_timestamp</th>
+                      <td>
+                        
+                          1541137498.427701
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1:5000/api/get-token
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 46
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 02 Nov 2018 05:44:58 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.14.1 Python/3.5.2
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            OK
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            200
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1:5000/api/get-token
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            True
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>content</th>
+                        <td>
+                          
+                            
+                              <pre>{&#34;success&#34;: true, &#34;token&#34;: &#34;Rut70IeZ4r5ZYc71&#34;}</pre>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                        
+                  </table>
+              </div>
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>46</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>32.97</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>10.047</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+          <a class="button" href="#popup_attachment_4_1">traceback</a>
+          <div id="popup_attachment_4_1" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_4_1">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 59, in test
+    test_runner.run_test(teststep_dict)
+backend.httprunner.exceptions.ValidationFailure: validate: content.success equals true(str)	==> fail
+True(bool) equals true(str)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 61, in test
+    self.fail(str(ex))
+AssertionError: validate: content.success equals true(str)	==> fail
+True(bool) equals true(str)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+    
+    <tr id="record_4_2">
+      <th class="failure" style="width:5em;">failure</td>
+      <td colspan="2">get user</td>
+      <td style="text-align:center;width:6em;">24.17 ms</td>
+      <td class="detail">
+
+        <a class="button" href="#popup_log_4_2">log</a>
+        <div id="popup_log_4_2" class="overlay">
+          <div class="popup">
+            <h2>Request and Response data</h2>
+            <a class="close" href="#record_4_2">&times;</a>
+
+            <div class="content">
+              <h3>Request:</h3>
+              <div style="overflow: auto">
+                <table>
+                  
+                    <tr>
+                      <th>json</th>
+                      <td>
+                        
+                          {'password': '123456', 'name': 'user1'}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>method</th>
+                      <td>
+                        
+                          POST
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>body</th>
+                      <td>
+                        
+                          {&#34;password&#34;: &#34;123456&#34;, &#34;name&#34;: &#34;user1&#34;}
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>headers</th>
+                      <td>
+                        
+                          
+                          <div>
+                            <strong>Content-Length</strong>: 39
+                          </div>
+                          
+                          <div>
+                            <strong>Accept</strong>: */*
+                          </div>
+                          
+                          <div>
+                            <strong>Content-Type</strong>: application/json
+                          </div>
+                          
+                          <div>
+                            <strong>Accept-Encoding</strong>: gzip, deflate
+                          </div>
+                          
+                          <div>
+                            <strong>token</strong>: Rut70IeZ4r5ZYc71
+                          </div>
+                          
+                          <div>
+                            <strong>device_sn</strong>: h6f1ZO3V6QvgFQu
+                          </div>
+                          
+                          <div>
+                            <strong>Connection</strong>: keep-alive
+                          </div>
+                          
+                          <div>
+                            <strong>User-Agent</strong>: python-requests/2.18.4
+                          </div>
+                          
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>start_timestamp</th>
+                      <td>
+                        
+                          1541137498.4857652
+                        
+                      </td>
+                    </tr>
+                  
+                    <tr>
+                      <th>url</th>
+                      <td>
+                        
+                          http://127.0.0.1:5000/api/users/1004
+                        
+                      </td>
+                    </tr>
+                  
+                </table>
+              </div>
+
+              <h3>Response:</h3>
+              <div style="overflow: auto">
+                <table>
+                    
+                      
+                      <tr>
+                        <th>headers</th>
+                        <td>
+                          
+                            
+                            <div>
+                              <strong>Content-Length</strong>: 50
+                            </div>
+                            
+                            <div>
+                              <strong>Date</strong>: Fri, 02 Nov 2018 05:44:58 GMT
+                            </div>
+                            
+                            <div>
+                              <strong>Content-Type</strong>: application/json
+                            </div>
+                            
+                            <div>
+                              <strong>Server</strong>: Werkzeug/0.14.1 Python/3.5.2
+                            </div>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>cookies</th>
+                        <td>
+                          
+                            {}
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>reason</th>
+                        <td>
+                          
+                            INTERNAL SERVER ERROR
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                      <tr>
+                        <th>status_code</th>
+                        <td>
+                          
+                            500
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>url</th>
+                        <td>
+                          
+                            http://127.0.0.1:5000/api/users/1004
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>encoding</th>
+                        <td>
+                          
+                            None
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>ok</th>
+                        <td>
+                          
+                            False
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                      <tr>
+                        <th>content</th>
+                        <td>
+                          
+                            
+                              <pre>{&#34;success&#34;: false, &#34;msg&#34;: &#34;user already existed.&#34;}</pre>
+                            
+                          
+                        </td>
+                      </tr>
+                    
+                      
+                        
+                      
+                        
+                  </table>
+              </div>
+
+              <h3>Validators:</h3>
+              <div style="overflow: auto">
+                  <table>
+                    <tr>
+                      <th>check</th>
+                      <th>comparator</th>
+                      <th>expect value</th>
+                      <th>actual value</th>
+                    </tr>
+                    
+                  </table>
+              </div>
+
+              <h3>Statistics:</h3>
+              <div style="overflow: auto">
+                <table>
+                  <tr>
+                      <th>content_size(bytes)</th>
+                      <td>50</td>
+                    </tr>
+                  <tr>
+                    <th>response_time(ms)</th>
+                    <td>24.17</td>
+                  </tr>
+                  <tr>
+                    <th>elapsed(ms)</th>
+                    <td>20.953</td>
+                  </tr>
+                </table>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        
+          <a class="button" href="#popup_attachment_4_2">traceback</a>
+          <div id="popup_attachment_4_2" class="overlay">
+            <div class="popup">
+              <h2>Traceback Message</h2>
+              <a class="close" href="#record_4_2">&times;</a>
+              <div class="content"><pre>Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 59, in test
+    test_runner.run_test(teststep_dict)
+backend.httprunner.exceptions.ValidationFailure: validate: status_code equals 201(int)	==> fail
+500(int) equals 201(int)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/kobe/main_project/backend/httprunner/api.py", line 61, in test
+    self.fail(str(ex))
+AssertionError: validate: status_code equals 201(int)	==> fail
+500(int) equals 201(int)
+</pre></div>
+            </div>
+          </div>
+        
+
+      </td>
+    </tr>
+  
+  </table>
+  
+</body>

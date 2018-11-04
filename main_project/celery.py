@@ -28,4 +28,4 @@ def debug_task(self):
 
 # 运行
 # python manage.py  celery -A main_project  worker  --loglevel=info
-# python manage.py  celery flower    --port=9999  --address=192.168.50.131  --logging=debug
+# python manage.py  celery flower    --port=9999  --address=192.168.50.131  --logging=info

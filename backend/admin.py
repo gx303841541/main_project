@@ -15,7 +15,7 @@ class ProjectAdmin(admin.ModelAdmin):
 
 class ApiAdmin(admin.ModelAdmin):
     #fields = ['name', 'url']
-    list_display = ('name', 'variables', 'api_url', 'method', 'header', 'data', 'validate')
+    list_display = ('name', 'variables', 'api_url', 'method', 'data', 'validate')
 
 
 class SuiteAdmin(admin.ModelAdmin):
@@ -25,7 +25,7 @@ class SuiteAdmin(admin.ModelAdmin):
 
 class CaseAdmin(admin.ModelAdmin):
     #fields = ['name', 'url']
-    list_display = ('name', 'parameters', 'variables', 'base_url', 'header')
+    list_display = ('name', 'parameters', 'variables', 'base_url')
 
 
 class StepAdmin(admin.ModelAdmin):
