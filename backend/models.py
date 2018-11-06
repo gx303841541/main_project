@@ -59,7 +59,7 @@ class Api(BaseTable):
         ("DELETE", "DELETE"),
     )
 
-    name = models.CharField("name", null=False, max_length=100, unique=True)
+    name = models.CharField("name", unique=True, null=False, max_length=100)
     variables = models.TextField("variables", null=True, blank=True)
     api_url = models.CharField("api_url", null=False, max_length=50)
     method = models.CharField("method", choices=method_map, default=1, max_length=50)
@@ -81,7 +81,7 @@ class Api(BaseTable):
 
 # Suite model
 class Suite(BaseTable):
-    name = models.CharField("name", null=False, max_length=100, unique=True)
+    name = models.CharField("name", unique=True, null=False, max_length=100)
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='my_suites')
 
     def __str__(self):
@@ -94,7 +94,7 @@ class Suite(BaseTable):
 
 # Case model
 class Case(BaseTable):
-    name = models.CharField("name", null=False, max_length=100, unique=True)
+    name = models.CharField("name", unique=True, null=False, max_length=100)
     parameters = models.TextField("parameters", null=True, blank=True)
     variables = models.TextField("variables", null=True, blank=True)
     base_url = models.CharField("base_url", null=False, max_length=50)
@@ -117,16 +117,16 @@ class Case(BaseTable):
 
 # Step model
 class Step(BaseTable):
-    name = models.CharField("name", null=False, max_length=100, unique=True)
+    name = models.CharField("name", unique=True, null=False, max_length=100)
     variables = models.TextField("variables", null=True, blank=True)
     extract = models.TextField("extract", null=True, blank=True)
     base_url = models.CharField("base_url", null=True, blank=True, max_length=50)
-    header = models.TextField("header", null=True)
+    header = models.TextField("header", null=True, blank=True)
     validate = models.TextField("validate", null=True, blank=True)
     order = models.IntegerField("order", default=99)
 
     api = models.ForeignKey(Api, on_delete=models.CASCADE, related_name='my_steps')
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='my_steps')
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='my_steps', null=True)
 
     def __str__(self):
         return str(self.name)
@@ -136,38 +136,9 @@ class Step(BaseTable):
         ordering = ('-create_time', 'name', )
 
 
-# CaseResult model
-class CaseResult(BaseTable):
-    name = models.CharField("name", null=False, max_length=100, unique=True)
-    content = models.TextField("content", null=True, blank=True)
-    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='my_caseresults')
-
-    def __str__(self):
-        return str(self.name)
-
-    class Meta:
-        verbose_name = "case result"
-        ordering = ('-create_time', 'name', )
-
-
-# CaseResult model
-class StepResult(BaseTable):
-    name = models.CharField("name", null=False, max_length=100, unique=True)
-    content = models.TextField("content", null=True, blank=True)
-    caseresult = models.ForeignKey(CaseResult, on_delete=models.CASCADE, related_name='my_stepresults')
-    step = models.ForeignKey(Step, on_delete=models.CASCADE, related_name='my_stepresults')
-
-    def __str__(self):
-        return str(self.name)
-
-    class Meta:
-        verbose_name = "step result"
-        ordering = ('-create_time', 'name', )
-
-
 # SuiteResult model
 class SuiteResult(BaseTable):
-    name = models.CharField("name", null=False, max_length=100, unique=True)
+    name = models.CharField("name", unique=True, null=False, max_length=100)
     content = models.TextField("content", null=True, blank=True)
     total = models.IntegerField("total cases", default=0)
     successes = models.IntegerField("pass cases", default=0)
@@ -187,9 +158,49 @@ class SuiteResult(BaseTable):
         ordering = ('-create_time', 'name', )
 
 
+# CaseResult model
+result_map = (
+    ("pass", "pass"),
+    ("fail", "fail"),
+    ("skip", "skip"),
+    ("error", "error"),
+)
+
+
+class CaseResult(BaseTable):
+    name = models.CharField("name", unique=True, null=False, max_length=100)
+    content = models.TextField("content", null=True, blank=True)
+    result = models.CharField("result", choices=result_map, default=1, max_length=10)
+    case = models.ForeignKey(Case, on_delete=models.CASCADE, related_name='my_caseresults', null=True)
+    suiteresult = models.ForeignKey(SuiteResult, on_delete=models.CASCADE, related_name='my_caseresults', null=True)
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        verbose_name = "case result"
+        ordering = ('-create_time', 'name', )
+
+
+# CaseResult model
+class StepResult(BaseTable):
+    name = models.CharField("name", unique=True, null=False, max_length=100)
+    content = models.TextField("content", null=True, blank=True)
+    result = models.CharField("result", choices=result_map, default=1, max_length=10)
+    caseresult = models.ForeignKey(CaseResult, on_delete=models.CASCADE, related_name='my_stepresults')
+    step = models.ForeignKey(Step, on_delete=models.CASCADE, related_name='my_stepresults')
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        verbose_name = "step result"
+        ordering = ('-create_time', 'name', )
+
+
 # env model
 class Config(BaseTable):
-    name = models.CharField("name", null=False, max_length=100, unique=True)
+    name = models.CharField("name", unique=True, null=False, max_length=100)
     ip = models.GenericIPAddressField("ip")
     port = models.IntegerField("port", default=8888)
     hostname = models.URLField("hostname", max_length=100, default='http://')

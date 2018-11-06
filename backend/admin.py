@@ -30,7 +30,7 @@ class CaseAdmin(admin.ModelAdmin):
 
 class StepAdmin(admin.ModelAdmin):
     #fields = ['name', 'url']
-    list_display = ('name', 'extract', 'variables', 'base_url', 'header', 'validate')
+    list_display = ('name', 'order')
 
 
 class CaseResultAdmin(admin.ModelAdmin):

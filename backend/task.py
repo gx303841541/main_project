@@ -28,8 +28,8 @@ def run_xxx(callback=None, dot_env_path=None):
 @celery_app.task(bind=True)
 def run_suite(self, callback=None, dot_env_path=None, *, suite):
     print("New task: to run suite %s" % (suite.name))
-    time.sleep(10)
     timestamp = '_' + datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
+    time.sleep(60)
     result = {
         'total': 0,
         'successes': 0,
@@ -38,23 +38,30 @@ def run_suite(self, callback=None, dot_env_path=None, *, suite):
         'errors': 0,
         'unknow': 0
     }
+    case_results = []
     for case in suite.my_cases.all().order_by('order'):
-        case_result = run_case(case=case, request=None, return_caseresult_url=False, statistics=True)
-        if case_result['success']:
+        case_result_msg, case_result = run_case(case=case, request=None, return_caseresult_url=False, statistics=True)
+        case_results.append(case_result)
+        if case_result_msg['success']:
             result['total'] += 1
-            for item in case_result['statistics']:
-                result[item] += case_result['statistics'][item]
+            for item in case_result_msg['statistics']:
+                result[item] += case_result_msg['statistics'][item]
         else:
             result['total'] += 1
             result['errors'] += 1
 
-    case_ressult = SuiteResult.objects.create(
-        name=suite.name + timestamp, suite=suite, **result)
+    suite_result = SuiteResult.objects.create(name=suite.name + timestamp, suite=suite, **result)
     print("suite result %s created!" % (suite.name + timestamp))
-    return result
+    for case_result in case_results:
+        print(case_result)
+        case_result.suiteresult = suite_result
+        case_result.save()
+    return result, suite_result
 
 
 def run_case(callback=None, dot_env_path=None, return_caseresult_url=False, statistics=False, *, case, request):
+    print("New task: to run case %s" % (case.name))
+    case_ressult = None
     # format data to httprunner format
     data = formater.get_httprunner_case(case)
     if data:
@@ -62,17 +69,20 @@ def run_case(callback=None, dot_env_path=None, return_caseresult_url=False, stat
             timestamp = '_' + datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
             runner = HttpRunner()
             runner.run(data, )
-            print(runner.summary)
+            # print(runner.summary)
             # runner.gen_html_report(html_report_name='report.html')
             records = runner.summary['details'][0].pop('records')
+            result = 'pass' if runner.summary['success'] else 'fail'
             case_ressult = CaseResult.objects.create(
-                name=case.name + timestamp, content=json.dumps(formater.bytes_to_str(runner.summary)), case=case)
+                name=case.name + timestamp, content=json.dumps(formater.bytes_to_str(runner.summary)), result=result, case=case)
             print("case result %s created!" % (case.name + timestamp))
 
             steps = case.my_steps.all().order_by('order')
             for step in steps:
+                record = records.pop(0)
+                result = 'pass' if record['status'] == 'success' else 'fail'
                 step_result = StepResult.objects.create(
-                    name=step.name + timestamp, content=json.dumps(formater.bytes_to_str(records.pop(0))), caseresult=case_ressult, step=step)
+                    name=step.name + timestamp, content=json.dumps(formater.bytes_to_str(record)), result=result, caseresult=case_ressult, step=step)
                 print("step result %s created!" % (step.name + timestamp))
 
             if return_caseresult_url:
@@ -102,11 +112,11 @@ def run_case(callback=None, dot_env_path=None, return_caseresult_url=False, stat
                     'errors': errors,
                     'unknow': unknow
                 }
-            return (rsp_msg.CASE_RUN_SUCCESS)
+            return (rsp_msg.CASE_RUN_SUCCESS, case_ressult)
 
         except Exception as e:
             rsp_msg.CASE_RUN_FAIL['msg'] = "[%s]: %s" % (runner.exception_stage, str(e))
-            return (rsp_msg.CASE_RUN_FAIL)
+            return (rsp_msg.CASE_RUN_FAIL, case_ressult)
     else:
         rsp_msg.CASE_RUN_FAIL['msg'] = "case format invalid!"
-        return (rsp_msg.CASE_RUN_FAIL)
+        return (rsp_msg.CASE_RUN_FAIL, case_ressult)

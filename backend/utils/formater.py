@@ -163,44 +163,49 @@ def get_httprunner_case(case_instance):
     # step 2: get step
     case['teststeps'] = []
     steps = case_instance.my_steps.all().order_by('order')
-    for step in steps:
-        casestep = {}
-        # name
-        if hasattr(step, 'name'):
-            casestep['name'] = step.name
-        else:
-            casestep['name'] = 'I am a no name step, so said!'
-        print('step: %s' % casestep['name'])
+    if not steps:
+        print('case name: %s, no steps found!' % (case['config']['name']))
+        return False
+    else:
+        for step in steps:
+            casestep = {}
+            # name
+            if hasattr(step, 'name'):
+                casestep['name'] = step.name
+            else:
+                casestep['name'] = 'I am a no name step, so said!'
+            print('step: %s' % casestep['name'])
 
-        # variables
-        if hasattr(step, 'variables') and step.variables:
-            casestep['variables'] = _parser_variables(step.variables)
+            # variables
+            if hasattr(step, 'variables') and step.variables:
+                casestep['variables'] = _parser_variables(step.variables)
 
-        # extract
-        if hasattr(step, 'extract') and step.extract:
-            casestep['extract'] = _parser_extract(step.extract)
+            # extract
+            if hasattr(step, 'extract') and step.extract:
+                casestep['extract'] = _parser_extract(step.extract)
 
-        # base_url
-        if hasattr(step, 'base_url') and step.base_url:
-            casestep['base_url'] = step.base_url
+            # base_url
+            if hasattr(step, 'base_url') and step.base_url:
+                casestep['base_url'] = step.base_url
 
-        # headers
-        if hasattr(step, 'headers') and step.headers:
-            casestep['header'] = step.headers
+            # headers
+            if hasattr(step, 'headers') and step.headers:
+                casestep['header'] = step.headers
 
-        # validate
-        if hasattr(step, 'validate') and step.validate:
-            casestep['validate'] = _parser_validate(step.validate)
+            # validate
+            if hasattr(step, 'validate') and step.validate:
+                casestep['validate'] = _parser_validate(step.validate)
 
-        # api
-        if hasattr(step, 'api'):
-            api = step.api
-            casestep['api'] = api.name
-            def_block = _get_block_by_name(casestep['api'], case['config']['refs']['def-api'])
-            _extend_block(casestep, def_block)
+            # api
+            if hasattr(step, 'api'):
+                api = step.api
+                casestep['api'] = api.name
+                def_block = _get_block_by_name(casestep['api'], case['config']['refs']['def-api'])
+                _extend_block(casestep, def_block)
 
-        case['teststeps'].append(casestep)
-    print(convert_to_dictstr(case))
+            case['teststeps'].append(casestep)
+
+    # print(convert_to_dictstr(case))
     return case
 
 

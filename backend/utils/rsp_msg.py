@@ -54,20 +54,20 @@ SUITE_FAIL = {
 SUITE_RUN_SUCCESS = {
     "code": "0004",
     "success": True,
-    "msg": "run case done!"
+    "msg": "run suite done!"
 }
 
 SUITE_RUNNING = {
     "code": "0005",
     "success": True,
-    "msg": "case running......"
+    "msg": "suite running......"
 }
 
 
 SUITE_CANCEL = {
     "code": "0006",
     "success": True,
-    "msg": "run case canceled!"
+    "msg": "run suite canceled!"
 }
 
 SUITE_RUN_FAIL = {

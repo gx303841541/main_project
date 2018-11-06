@@ -2,6 +2,7 @@ from backend.models import (Api, Case, CaseResult, Config, Project, Step,
                             StepResult, Suite, SuiteResult)
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from rest_framework.utils import html, model_meta, representation
 
 
 class ProjectSerializer(serializers.HyperlinkedModelSerializer):
@@ -29,8 +30,9 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
 
 class ApiSerializer(serializers.HyperlinkedModelSerializer):
     # my_cases = serializers.PrimaryKeyRelatedField(many=True, queryset=Case.objects.all())
-    my_cases = serializers.HyperlinkedRelatedField(
-        many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
+    # my_cases = serializers.HyperlinkedRelatedField(
+    #    many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
+    my_cases = serializers.SlugRelatedField(many=True, queryset=Case.objects.all(), slug_field='name', allow_null=True)
     # my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
 
     #json = serializers.SerializerMethodField()
@@ -47,43 +49,93 @@ class ApiSerializer(serializers.HyperlinkedModelSerializer):
 
 class SuiteSerializer(serializers.HyperlinkedModelSerializer):
     my_cases = serializers.SlugRelatedField(many=True, queryset=Case.objects.all(), slug_field='name', allow_null=True)
-    # my_cases = serializers.HyperlinkedRelatedField(
-    #    many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
-    # my_suiteresults = serializers.PrimaryKeyRelatedField(many=True, queryset=SuiteResult.objects.all())
-    my_suiteresults = serializers.HyperlinkedRelatedField(
-        many=True, view_name='suiteresult-detail', queryset=SuiteResult.objects.all(), allow_null=True, required=False)
 
     class Meta:
         model = Suite
         fields = '__all__'
 
 
-class CaseSerializer(serializers.HyperlinkedModelSerializer):
-    # my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
-    my_steps = serializers.HyperlinkedRelatedField(
-        many=True, view_name='step-detail', queryset=Step.objects.all().order_by('-order'), allow_null=True, required=False)
-    # my_caseresults = serializers.PrimaryKeyRelatedField(many=True, queryset=CaseResult.objects.all())
-    my_caseresults = serializers.HyperlinkedRelatedField(
-        many=True, view_name='caseresult-detail', queryset=CaseResult.objects.all(), allow_null=True, required=False)
+class SuiteWithResultSerializer(serializers.HyperlinkedModelSerializer):
+    my_cases = serializers.SlugRelatedField(many=True, queryset=Case.objects.all(), slug_field='name', allow_null=True)
+
+    my_suiteresults = serializers.SlugRelatedField(
+        many=True, queryset=SuiteResult.objects.all(), slug_field='name', required=False)
 
     class Meta:
-        model = Case
+        model = Suite
         fields = '__all__'
 
 
 class StepSerializer(serializers.HyperlinkedModelSerializer):
-    # my_stepresults = serializers.PrimaryKeyRelatedField(many=True, queryset=StepResult.objects.all())
-    my_stepresults = serializers.HyperlinkedRelatedField(
-        many=True, view_name='stepresult-detail', queryset=StepResult.objects.all(), allow_null=False, required=False)
 
     class Meta:
         model = Step
         fields = '__all__'
 
 
+class StepWithResultSerializer(serializers.HyperlinkedModelSerializer):
+    # my_stepresults = serializers.HyperlinkedRelatedField(
+    #    many=True, view_name='stepresult-detail', queryset=StepResult.objects.order_by('name'), allow_null=False, required=False)
+    my_stepresults = serializers.SlugRelatedField(
+        many=True, queryset=StepResult.objects.all(), slug_field='name', required=False)
+
+    class Meta:
+        model = Step
+        fields = '__all__'
+
+
+class CaseSerializer(serializers.HyperlinkedModelSerializer):
+    my_steps = serializers.SlugRelatedField(many=True, queryset=Step.objects.all(), slug_field='name', allow_null=True)
+
+    class Meta:
+        model = Case
+        fields = '__all__'
+        #depth = 1
+
+
+class CaseWithResultSerializer(serializers.HyperlinkedModelSerializer):
+    my_steps = serializers.SlugRelatedField(many=True, queryset=Step.objects.all(), slug_field='name', allow_null=True)
+    # my_steps = serializers.HyperlinkedRelatedField(
+    #    many=True, view_name='step-detail', queryset=Step.objects.all().order_by('-order'), allow_null=True, required=False)
+    #my_steps = StepWithResultSerializer(many=True, read_only=False)
+
+    # my_caseresults = serializers.PrimaryKeyRelatedField(many=True, queryset=CaseResult.objects.all())
+    # my_caseresults = serializers.HyperlinkedRelatedField(
+    #    many=True, view_name='caseresult-detail', queryset=CaseResult.objects.all(), allow_null=True, required=False)
+    my_caseresults = serializers.SlugRelatedField(
+        many=True, queryset=CaseResult.objects.all(), slug_field='name', required=False)
+
+    class Meta:
+        model = Case
+        fields = '__all__'
+        #depth = 1
+
+    def createx(self, validated_data):
+        apis = validated_data.pop('apis')
+        suites = validated_data.pop('suites')
+        my_steps_datas = validated_data.pop('my_steps')
+
+        case = Case.objects.create(**validated_data)
+        for api in apis:
+            api = Api.objects.get(name=api)
+            api.my_cases.add(case)
+
+        for suite in suites:
+            suite = Suite.objects.get(name=suite)
+            suite.my_cases.add(case)
+
+        for my_steps_data in my_steps_datas:
+            my_steps_data.pop('case')
+            Step.objects.get_or_create(case=case, **my_steps_data)
+        return case
+
+
 class CaseResultSerializer(serializers.HyperlinkedModelSerializer):
-    my_stepresults = serializers.HyperlinkedRelatedField(
-        many=True, view_name='stepresult-detail', queryset=StepResult.objects.all(), allow_null=False, required=False)
+    # my_stepresults = serializers.HyperlinkedRelatedField(
+    #    many=True, view_name='stepresult-detail', queryset=StepResult.objects.all(), allow_null=False, required=False)
+
+    my_stepresults = serializers.SlugRelatedField(
+        many=True, queryset=StepResult.objects.all(), slug_field='name', required=False)
 
     class Meta:
         model = CaseResult
@@ -99,6 +151,17 @@ class StepResultSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SuiteResultSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = SuiteResult
+        fields = '__all__'
+
+
+class SuiteResultWithResultSerializer(serializers.HyperlinkedModelSerializer):
+    # my_caseresults = serializers.HyperlinkedRelatedField(
+    #   many=True, view_name='caseresult-detail', queryset=CaseResult.objects.all(), allow_null=True, required=False)
+
+    my_caseresults = serializers.SlugRelatedField(
+        many=True, queryset=CaseResult.objects.all(), slug_field='name', required=False)
 
     class Meta:
         model = SuiteResult
