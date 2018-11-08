@@ -15,7 +15,7 @@ from rest_framework.reverse import reverse
 
 @task
 def add(x, y):
-    print('12313')
+    print(x, y, x + y)
     return x + y
 
 
@@ -53,7 +53,7 @@ def run_suite(self, callback=None, dot_env_path=None, *, suite):
     suite_result = SuiteResult.objects.create(name=suite.name + timestamp, suite=suite, **result)
     print("suite result %s created!" % (suite.name + timestamp))
     for case_result in case_results:
-        print(case_result)
+        # print(case_result)
         case_result.suiteresult = suite_result
         case_result.save()
     return result, suite_result

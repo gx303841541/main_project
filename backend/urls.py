@@ -13,6 +13,7 @@ from . import views
 router = DefaultRouter()
 router.register(r'projects', views.ProjectViewSet)
 router.register(r'apis', views.ApiViewSet)
+router.register(r'apisuites', views.ApiSuiteViewSet)
 router.register(r'suites', views.SuiteViewSet)
 router.register(r'cases', views.CaseViewSet)
 router.register(r'steps', views.StepViewSet)

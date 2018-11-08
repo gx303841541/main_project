@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
-import django_celery_results
+#import django_celery_results
 # celery config
 import djcelery
 from celery.schedules import crontab, timedelta

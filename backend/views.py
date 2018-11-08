@@ -264,7 +264,15 @@ class ApiViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         api = self.get_object()
         serializer = self.get_serializer(api, many=False)
-        return Response(serializer.data)
+        tmp = serializer.data
+        tmp_list = []
+        for step_name in tmp['my_steps']:
+            step = api.my_steps.get(name=step_name)
+            case_name = step.case.name
+            tmp_list.append(case_name + ' : ' + step_name)
+
+        tmp['my_steps'] = tmp_list
+        return Response(tmp)
 
     def update(self, request, *args, **kwargs):
         api = self.get_object()
@@ -286,6 +294,66 @@ class ApiViewSet(viewsets.ModelViewSet):
         api = self.get_object()
         api.delete()
         return Response(rsp_msg.API_DELETE_SUCCESS)
+
+
+class ApiSuiteViewSet(viewsets.GenericViewSet):
+    """
+    此视图自动提供`list`，`create`，`retrieve`，`update`和`destroy`操作。
+    """
+    queryset = ApiSuite.objects.all()
+    serializer_class = ApiSuiteSerializer
+    pagination_class = pagination.MyPageNumberPagination
+    authentication_classes = ()
+    permission_classes = (IsOwnerOrReadOnly, )
+
+    # def get_serializer_class(self):
+    #    if self.action == 'retrieve':
+    #        return ApiSuiteWithResultSerializer
+
+    #    return ApiSuiteSerializer
+
+    def list(self, request, format=None):
+        name = request.query_params.get('name', None)
+        project_id = request.query_params.get('project_id', None)
+        if name:
+            apisuites = self.get_queryset().filter(name=name)
+        elif project_id:
+            apisuites = self.get_queryset().filter(project__id=project_id)
+        else:
+            apisuites = self.get_queryset()
+        page_apisuites = self.paginate_queryset(apisuites)
+        serializer = self.get_serializer(page_apisuites, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    def create(self, request, format=None):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(rsp_msg.APISUITE_CREATE_SUCCESS)
+
+        rsp_msg.APISUITE_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.APISUITE_FAIL)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, many=False)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(rsp_msg.APISUITE_UPDATE_SUCCESS)
+        rsp_msg.APISUITE_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.APISUITE_FAIL)
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.delete()
+        return Response(rsp_msg.APISUITE_DELETE_SUCCESS)
 
 
 class SuiteViewSet(viewsets.GenericViewSet):
@@ -392,12 +460,12 @@ class SuiteViewSet(viewsets.GenericViewSet):
     def check_run(self, request, pk=None):
         suite = self.get_object()
         if suite:
-            result_id = request.query_params.get('result_id', None)
-            if result_id:
-                print('views to check run suite: %s, id: %s' % (suite.name, result_id))
+            id = request.query_params.get('id', None)
+            if id:
+                print('views to check run suite: %s, id: %s' % (suite.name, id))
 
-                if result_id in self.result_ids:
-                    task_result = self.result_ids[result_id]
+                if id in self.result_ids:
+                    task_result = self.result_ids[id]
                 else:
                     task_result = None
 
@@ -409,7 +477,7 @@ class SuiteViewSet(viewsets.GenericViewSet):
                 rsp_msg.SUITE_RUN_SUCCESS['task'], suite_result = task_result.get()
                 rsp_msg.SUITE_RUN_SUCCESS['result'] = reverse(
                     'suiteresult-detail', args=[suite_result.pk], request=request)
-                self.result_ids.pop(result_id)
+                self.result_ids.pop(id)
                 return Response(rsp_msg.SUITE_RUN_SUCCESS)
 
             elif task_result:
@@ -577,29 +645,15 @@ class StepViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             # now do not know frontend format, so just store it
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(rsp_msg.STEP_CREATE_SUCCESS)
 
             # format request.data(from frontend) to backend format
             data = formater.get_backend_step(request.data)
             if data:
                 Step.objects.create(**data)
-                return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def update(self, request, *args, **kwargs):
-        step = self.get_object()
-        serializer = self.get_serializer(step, data=request.data)
-        if serializer.is_valid():
-            # now do not know frontend format, so just store it
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-
-            # format request.data(from frontend) to backend format
-            data = formater.get_backend_step(request.data)
-            if data:
-                Step.objects.filter(id=kwargs['pk']).update(**data)
-                return Response(serializer.data, response.HTTP_202_ACCEPTED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                return Response(rsp_msg.STEP_CREATE_SUCCESS)
+        rsp_msg.STEP_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.STEP_FAIL)
 
     def retrieve(self, request, *args, **kwargs):
         step = self.get_object()
@@ -608,6 +662,27 @@ class StepViewSet(viewsets.ModelViewSet):
         tmp = serializer.data
         tmp['my_stepresults'] = tmp['my_stepresults'][:result_count]
         return Response(tmp)
+
+    def update(self, request, *args, **kwargs):
+        step = self.get_object()
+        serializer = self.get_serializer(step, data=request.data)
+        if serializer.is_valid():
+            # now do not know frontend format, so just store it
+            serializer.save()
+            return Response(rsp_msg.STEP_UPDATE_SUCCESS)
+
+            # format request.data(from frontend) to backend format
+            data = formater.get_backend_step(request.data)
+            if data:
+                Step.objects.filter(id=kwargs['pk']).update(**data)
+                return Response(rsp_msg.STEP_UPDATE_SUCCESS)
+        rsp_msg.STEP_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.STEP_FAIL)
+
+    def destroy(self, request, *args, **kwargs):
+        step = self.get_object()
+        step.delete()
+        return Response(rsp_msg.STEP_DELETE_SUCCESS)
 
 
 class CaseResultViewSet(viewsets.ModelViewSet):
@@ -716,6 +791,8 @@ class ConfigViewSet(viewsets.ModelViewSet):
     queryset = Config.objects.all()
     serializer_class = ConfigSerializer
     pagination_class = pagination.MyPageNumberPagination
+    authentication_classes = ()
+    permission_classes = (IsOwnerOrReadOnly, )
 
     def list(self, request, format=None):
         name = request.query_params.get('name', None)
@@ -726,3 +803,31 @@ class ConfigViewSet(viewsets.ModelViewSet):
         page_configs = self.paginate_queryset(configs)
         serializer = self.get_serializer(page_configs, many=True)
         return self.get_paginated_response(serializer.data)
+
+    def create(self, request, format=None):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(rsp_msg.CONFIG_CREATE_SUCCESS)
+        rsp_msg.CONFIG_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.CONFIG_FAIL)
+
+    def retrieve(self, request, *args, **kwargs):
+        config = self.get_object()
+        serializer = self.get_serializer(config, many=False)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        config = self.get_object()
+        serializer = self.get_serializer(config, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(rsp_msg.CONFIG_UPDATE_SUCCESS)
+
+        rsp_msg.CONFIG_FAIL['msg'] = serializer.errors
+        return Response(rsp_msg.CONFIG_FAIL)
+
+    def destroy(self, request, *args, **kwargs):
+        config = self.get_object()
+        config.delete()
+        return Response(rsp_msg.CONFIG_DELETE_SUCCESS)

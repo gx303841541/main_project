@@ -70,12 +70,28 @@ class Api(BaseTable):
     validate = models.TextField("validate", null=True, blank=True)
 
     project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='my_apis')
+    apisuite = models.ForeignKey('Apisuite', on_delete=models.SET_NULL, related_name='my_apis', null=True)
 
     def __str__(self):
         return str(self.name)
 
     class Meta:
         verbose_name = "api"
+        ordering = ('-create_time', 'name', )
+
+
+# Suite model
+class ApiSuite(BaseTable):
+    name = models.CharField("name", unique=True, null=False, max_length=100)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='my_apisuites')
+    father_apisuite = models.ForeignKey('self', on_delete=models.CASCADE, null=True,
+                                        blank=True, related_name='my_apisuites')
+
+    def __str__(self):
+        return str(self.name)
+
+    class Meta:
+        verbose_name = "apisuite"
         ordering = ('-create_time', 'name', )
 
 
@@ -102,9 +118,9 @@ class Case(BaseTable):
     order = models.IntegerField("order", default=99)
 
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='my_cases', null=True)
-    suites = models.ManyToManyField(Suite, related_name='my_cases', null=True)
+    suites = models.ManyToManyField(Suite, related_name='my_cases')
     # Does apis needed?
-    apis = models.ManyToManyField(Api, related_name='my_cases')
+    #apis = models.ManyToManyField(Api, related_name='my_cases')
 
     def __str__(self):
         return str(self.name)
@@ -203,7 +219,7 @@ class Config(BaseTable):
     name = models.CharField("name", unique=True, null=False, max_length=100)
     ip = models.GenericIPAddressField("ip")
     port = models.IntegerField("port", default=8888)
-    hostname = models.URLField("hostname", max_length=100, default='http://')
+    hostname = models.URLField("hostname", max_length=100, default='http://127.0.0.1:5000')
 
     project = models.ForeignKey(Project, on_delete=models.SET_NULL, related_name='my_configs', null=True)
 

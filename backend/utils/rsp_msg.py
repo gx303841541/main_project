@@ -128,6 +128,34 @@ CASE_RUN_FAIL = {
     "msg": "xxsb"
 }
 
+
+# step
+STEP_CREATE_SUCCESS = {
+    "code": "0001",
+    "success": True,
+    "msg": "step create success"
+}
+
+STEP_UPDATE_SUCCESS = {
+    "code": "0002",
+    "success": True,
+    "msg": "step update success"
+}
+
+STEP_DELETE_SUCCESS = {
+    "code": "0003",
+    "success": True,
+    "msg": "step delete success"
+}
+
+
+STEP_FAIL = {
+    "code": "0101",
+    "success": False,
+    "msg": "xxsb"
+}
+
+
 # api
 API_CREATE_SUCCESS = {
     "code": "0001",
@@ -149,6 +177,60 @@ API_DELETE_SUCCESS = {
 
 
 API_FAIL = {
+    "code": "0101",
+    "success": False,
+    "msg": "xxsb"
+}
+
+
+# apisuite
+APISUITE_CREATE_SUCCESS = {
+    "code": "0001",
+    "success": True,
+    "msg": "apisuite create success"
+}
+
+APISUITE_UPDATE_SUCCESS = {
+    "code": "0002",
+    "success": True,
+    "msg": "apisuite update success"
+}
+
+APISUITE_DELETE_SUCCESS = {
+    "code": "0003",
+    "success": True,
+    "msg": "apisuite delete success"
+}
+
+
+APISUITE_FAIL = {
+    "code": "0101",
+    "success": False,
+    "msg": "xxsb"
+}
+
+
+# config
+CONFIG_CREATE_SUCCESS = {
+    "code": "0001",
+    "success": True,
+    "msg": "config create success"
+}
+
+CONFIG_UPDATE_SUCCESS = {
+    "code": "0002",
+    "success": True,
+    "msg": "config update success"
+}
+
+CONFIG_DELETE_SUCCESS = {
+    "code": "0003",
+    "success": True,
+    "msg": "config delete success"
+}
+
+
+CONFIG_FAIL = {
     "code": "0101",
     "success": False,
     "msg": "xxsb"

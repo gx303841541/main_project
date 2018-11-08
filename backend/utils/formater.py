@@ -149,10 +149,10 @@ def get_httprunner_case(case_instance):
 
     # def-api
     case['config']['refs']['def-api'] = {}
-    for api_instance in case_instance.apis.all():
-        name, api = get_httprunner_api(api_instance)
-        if name:
-            case['config']['refs']['def-api'][name] = api
+    # for api_instance in case_instance.apis.all():
+    #    name, api = get_httprunner_api(api_instance)
+    #    if name:
+    #        case['config']['refs']['def-api'][name] = api
 
     # def-testcase
     case['config']['refs']['def-testcase'] = {}
@@ -198,9 +198,17 @@ def get_httprunner_case(case_instance):
 
             # api
             if hasattr(step, 'api'):
-                api = step.api
-                casestep['api'] = api.name
-                def_block = _get_block_by_name(casestep['api'], case['config']['refs']['def-api'])
+                api_instance = step.api
+                name, api = get_httprunner_api(api_instance)
+                if name:
+                    case['config']['refs']['def-api'][name] = api
+                else:
+                    print('case name: %s, step name: api %s format wrong!' %
+                          (case['config']['name'], step.name,  api_instance.name))
+                    return False
+
+                casestep['api'] = api_instance.name
+                def_block = _get_block_by_name(casestep['api'], case['config']['refs']['def-api'][name])
                 _extend_block(casestep, def_block)
 
             case['teststeps'].append(casestep)
@@ -213,11 +221,10 @@ def _get_api_name(api_with_paramaters):
     return api_with_paramaters.split('(')[0]
 
 
-def _get_block_by_name(api_name, api_map):
+def _get_block_by_name(api_name, block):
     function_meta = parser.parse_function(api_name)
     func_name = function_meta["func_name"]
     call_args = function_meta["args"]
-    block = api_map[func_name]
     def_args = block.get("function_meta", {}).get("args", [])
 
     if len(call_args) != len(def_args):

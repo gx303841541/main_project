@@ -1,5 +1,5 @@
-from backend.models import (Api, Case, CaseResult, Config, Project, Step,
-                            StepResult, Suite, SuiteResult)
+from backend.models import (Api, ApiSuite, Case, CaseResult, Config, Project,
+                            Step, StepResult, Suite, SuiteResult)
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.utils import html, model_meta, representation
@@ -32,8 +32,8 @@ class ApiSerializer(serializers.HyperlinkedModelSerializer):
     # my_cases = serializers.PrimaryKeyRelatedField(many=True, queryset=Case.objects.all())
     # my_cases = serializers.HyperlinkedRelatedField(
     #    many=True, view_name='case-detail', queryset=Case.objects.all(), allow_null=True, required=False)
-    my_cases = serializers.SlugRelatedField(many=True, queryset=Case.objects.all(), slug_field='name', allow_null=True)
-    # my_steps = serializers.PrimaryKeyRelatedField(many=True, queryset=Step.objects.all())
+    #my_cases = serializers.SlugRelatedField(many=True, queryset=Case.objects.all(), slug_field='name', allow_null=True)
+    my_steps = serializers.SlugRelatedField(many=True, queryset=Step.objects.all(), slug_field='name', allow_null=True)
 
     #json = serializers.SerializerMethodField()
 
@@ -45,6 +45,18 @@ class ApiSerializer(serializers.HyperlinkedModelSerializer):
         fields = '__all__'
         #fields = ('json', 'my_cases', 'name')
         # depth = 2
+
+
+class ApiSuiteSerializer(serializers.HyperlinkedModelSerializer):
+    my_apis = serializers.SlugRelatedField(
+        many=True, queryset=Api.objects.all(), slug_field='name', required=False)
+
+    my_apisuites = serializers.SlugRelatedField(
+        many=True, queryset=ApiSuite.objects.all(), slug_field='name', required=False)
+
+    class Meta:
+        model = ApiSuite
+        fields = '__all__'
 
 
 class SuiteSerializer(serializers.HyperlinkedModelSerializer):
