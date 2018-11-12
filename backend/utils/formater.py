@@ -9,6 +9,7 @@ import json
 import os
 import sys
 
+import backend.httprunner.exceptions as exceptions
 import backend.httprunner.logger as logger
 import backend.httprunner.parser as parser
 from backend.httprunner.loader import (_extend_block, load_project_tests,
@@ -74,8 +75,7 @@ def get_httprunner_api(api_instance):
         name = function_meta["func_name"]
         api["function_meta"] = function_meta
     else:
-        print('api name empty！')
-        return False
+        raise Exception('api name empty')
 
     # variables
     if hasattr(api_instance, 'variables') and api_instance.variables:
@@ -131,8 +131,7 @@ def get_httprunner_case(case_instance):
     if hasattr(case_instance, 'base_url') and case_instance.base_url:
         case['config']['request']['base_url'] = case_instance.base_url
     else:
-        print('case name: %s, no base_url found!' % (case['config']['name']))
-        return False
+        raise Exception('case name: %s, no base_url found!' % (case['config']['name']))
 
     # headers
     if hasattr(case_instance, 'headers') and case_instance.headers:
@@ -164,8 +163,7 @@ def get_httprunner_case(case_instance):
     case['teststeps'] = []
     steps = case_instance.my_steps.all().order_by('order')
     if not steps:
-        print('case name: %s, no steps found!' % (case['config']['name']))
-        return False
+        raise Exception('case name: %s, no steps found!' % (case['config']['name']))
     else:
         for step in steps:
             casestep = {}
@@ -203,9 +201,8 @@ def get_httprunner_case(case_instance):
                 if name:
                     case['config']['refs']['def-api'][name] = api
                 else:
-                    print('case name: %s, step name: api %s format wrong!' %
-                          (case['config']['name'], step.name,  api_instance.name))
-                    return False
+                    raise Exception('case name: %s, step name: api %s format wrong!' %
+                                    (case['config']['name'], step.name, api_instance.name))
 
                 casestep['api'] = api_instance.name
                 def_block = _get_block_by_name(casestep['api'], case['config']['refs']['def-api'][name])
@@ -400,4 +397,27 @@ def bytes_to_str(ori):
             src[bytes_to_str(k)] = bytes_to_str(v)
         return src
     else:
+        return src
+
+
+def convert_to_dictstr(src):
+    try:
+        if isinstance(src, dict):
+            return json.dumps(src, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
+
+        elif isinstance(src, str):
+            return json.dumps(json.loads(src), sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
+
+        elif isinstance(src, bytes):
+            return json.dumps(json.loads(src.decode('utf-8')), sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
+
+        elif isinstance(src, list):
+            src = {'Fuck': src}
+            return json.dumps(src, sort_keys=True, indent=4, separators=(',', ': '), ensure_ascii=False)
+
+        else:
+            print('Unknow type(%s): %s' % (src, str(type(src))))
+            return src
+    except Exception as e:
+        print('error: %s' % (e))
         return src

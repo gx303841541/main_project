@@ -232,6 +232,7 @@ class ApiViewSet(viewsets.ModelViewSet):
 
     def list(self, request, format=None):
         project_id = request.query_params.get('project_id', None)
+        apisuite_id = request.query_params.get('apisuite_id', None)
         name = request.query_params.get('name', None)
         if name:
             api = self.get_queryset().get(name=name)
@@ -239,6 +240,8 @@ class ApiViewSet(viewsets.ModelViewSet):
             return Response(serializer.data)
         elif project_id:
             apis = self.get_queryset().filter(project__id=project_id)
+        elif apisuite_id:
+            apis = self.get_queryset().filter(apisuite__id=apisuite_id)
         else:
             apis = self.get_queryset()
 
@@ -438,7 +441,7 @@ class SuiteViewSet(viewsets.GenericViewSet):
         if suite:
             task_result = task.run_suite.delay(suite=suite)
 
-            if task_result.status == 'SUCCESS':
+            if task_result.status in ('SUCCESS', 'FAILURE'):
                 rsp_msg.SUITE_RUN_SUCCESS['task'], suite_result = task_result.get()
                 rsp_msg.SUITE_RUN_SUCCESS['result'] = reverse(
                     'suiteresult-detail', args=[suite_result.pk], request=request)
@@ -473,7 +476,7 @@ class SuiteViewSet(viewsets.GenericViewSet):
                 rsp_msg.SUITE_FAIL['msg'] = 'Not result ID!'
                 return Response(rsp_msg.SUITE_FAIL)
 
-            if task_result and task_result.status == 'SUCCESS':
+            if task_result and task_result.status in ('SUCCESS', 'FAILURE'):
                 rsp_msg.SUITE_RUN_SUCCESS['task'], suite_result = task_result.get()
                 rsp_msg.SUITE_RUN_SUCCESS['result'] = reverse(
                     'suiteresult-detail', args=[suite_result.pk], request=request)
@@ -716,7 +719,7 @@ class CaseResultViewSet(viewsets.ModelViewSet):
             tmp_dict[order] = {
                 'step name': step_name,
                 'result': result,
-                'case log': step_result_name
+                'step log': step_result_name
             }
         tmp['my_stepresults'] = []
         for item in sorted(tmp_dict.keys()):
