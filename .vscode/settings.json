@@ -1,0 +1,7 @@
+{
+    "editor.fontFamily": "Consolas, 'Courier New', monospace",
+    "python.linting.pylintEnabled": false,
+    "python.pythonPath": "C:\\python3\\python.exe",
+    "files.encoding": "utf8",
+    "python.formatting.provider": "yapf",
+}

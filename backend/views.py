@@ -443,6 +443,10 @@ class SuiteViewSet(viewsets.GenericViewSet):
 
             if task_result.status in ('SUCCESS', 'FAILURE'):
                 rsp_msg.SUITE_RUN_SUCCESS['task'], suite_result = task_result.get()
+                rsp_msg.SUITE_RUN_SUCCESS['task'].update({
+                    'id': task_result.id,
+                    'status': task_result.status
+                })
                 rsp_msg.SUITE_RUN_SUCCESS['result'] = reverse(
                     'suiteresult-detail', args=[suite_result.pk], request=request)
                 return Response(rsp_msg.SUITE_RUN_SUCCESS)
@@ -478,6 +482,10 @@ class SuiteViewSet(viewsets.GenericViewSet):
 
             if task_result and task_result.status in ('SUCCESS', 'FAILURE'):
                 rsp_msg.SUITE_RUN_SUCCESS['task'], suite_result = task_result.get()
+                rsp_msg.SUITE_RUN_SUCCESS['task'].update({
+                    'id': task_result.id,
+                    'status': task_result.status
+                })
                 rsp_msg.SUITE_RUN_SUCCESS['result'] = reverse(
                     'suiteresult-detail', args=[suite_result.pk], request=request)
                 self.result_ids.pop(id)
@@ -535,6 +543,7 @@ class CaseViewSet(viewsets.GenericViewSet):
         project_id = request.query_params.get('project_id', None)
         suite_id = request.query_params.get('suite_id', None)
         name = request.query_params.get('name', None)
+        api_id = request.query_params.get('api_id', None)
         if name:
             case = self.get_queryset().get(name=name)
             serializer = self.get_serializer(case, many=False)
@@ -543,6 +552,16 @@ class CaseViewSet(viewsets.GenericViewSet):
             cases = self.get_queryset().filter(project__id=project_id)
         elif suite_id:
             cases = self.get_queryset().filter(suites__id=suite_id)
+        elif api_id:
+            cases = []
+            try:
+                api = Api.objects.get(pk=api_id)
+            except Api.DoesNotExist:
+                return Response("Api with ID %s doesn't exist!" % (api_id))
+            my_steps = api.my_steps.all()
+            for step in my_steps:
+                if step.case:
+                    cases.append(step.case)
         else:
             cases = self.get_queryset()
 
@@ -684,7 +703,12 @@ class StepViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         step = self.get_object()
+        my_order = step.order
         step.delete()
+        for step in step.case.my_steps.order_by('order'):
+            if step.order > my_order:
+                step.order -= 1
+                step.save()
         return Response(rsp_msg.STEP_DELETE_SUCCESS)
 
 
