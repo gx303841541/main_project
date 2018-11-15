@@ -167,11 +167,11 @@ class ProjectViewSet(viewsets.GenericViewSet):
     #    serializer.save(owner=self.request.user)
 
     def list(self, request, format=None):
+        projects = self.get_queryset()
         name = request.query_params.get('name', None)
+
         if name:
-            projects = self.get_queryset().filter(name=name)
-        else:
-            projects = self.get_queryset()
+            projects = projects.filter(name=name)
 
         page_projects = self.paginate_queryset(projects)
         serializer = self.get_serializer(page_projects, many=True)
@@ -231,19 +231,22 @@ class ApiViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrReadOnly, )
 
     def list(self, request, format=None):
+        apis = self.get_queryset()
         project_id = request.query_params.get('project_id', None)
         apisuite_id = request.query_params.get('apisuite_id', None)
         name = request.query_params.get('name', None)
+
         if name:
-            api = self.get_queryset().get(name=name)
+            api = apis.get(name=name)
             serializer = self.get_serializer(api, many=False)
             return Response(serializer.data)
-        elif project_id:
-            apis = self.get_queryset().filter(project__id=project_id)
-        elif apisuite_id:
-            apis = self.get_queryset().filter(apisuite__id=apisuite_id)
-        else:
-            apis = self.get_queryset()
+
+        if project_id:
+            apis = apis.filter(project__id=project_id)
+
+        if apisuite_id:
+            apis = apis.filter(apisuite__id=apisuite_id)
+
 
         page_apis = self.paginate_queryset(apis)
         serializer = self.get_serializer(page_apis, many=True)
@@ -316,14 +319,16 @@ class ApiSuiteViewSet(viewsets.GenericViewSet):
     #    return ApiSuiteSerializer
 
     def list(self, request, format=None):
+        apisuites = self.get_queryset()
         name = request.query_params.get('name', None)
         project_id = request.query_params.get('project_id', None)
+
         if name:
-            apisuites = self.get_queryset().filter(name=name)
-        elif project_id:
-            apisuites = self.get_queryset().filter(project__id=project_id)
-        else:
-            apisuites = self.get_queryset()
+            apisuites = apisuites.filter(name=name)
+
+        if project_id:
+            apisuites = apisuites.filter(project__id=project_id)
+
         page_apisuites = self.paginate_queryset(apisuites)
         serializer = self.get_serializer(page_apisuites, many=True)
         return self.get_paginated_response(serializer.data)
@@ -368,7 +373,7 @@ class SuiteViewSet(viewsets.GenericViewSet):
     pagination_class = pagination.MyPageNumberPagination
     authentication_classes = ()
     permission_classes = (IsOwnerOrReadOnly, )
-    result_ids = {}
+    task_ids = {}
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
@@ -377,14 +382,16 @@ class SuiteViewSet(viewsets.GenericViewSet):
         return SuiteSerializer
 
     def list(self, request, format=None):
+        suites = self.get_queryset()
         name = request.query_params.get('name', None)
         project_id = request.query_params.get('project_id', None)
+
         if name:
-            suites = self.get_queryset().filter(name=name)
-        elif project_id:
-            suites = self.get_queryset().filter(project__id=project_id)
-        else:
-            suites = self.get_queryset()
+            suites = suites.filter(name=name)
+
+        if project_id:
+            suites = suites.filter(project__id=project_id)
+
         page_suites = self.paginate_queryset(suites)
         serializer = self.get_serializer(page_suites, many=True)
         return self.get_paginated_response(serializer.data)
@@ -435,7 +442,6 @@ class SuiteViewSet(viewsets.GenericViewSet):
 
     @action(detail=True, methods=['get', 'post'])
     def run(self, request, pk=None):
-
         suite = self.get_object()
         print('views to run suite: %s' % (suite.name))
         if suite:
@@ -456,7 +462,7 @@ class SuiteViewSet(viewsets.GenericViewSet):
                     'id': task_result.id,
                     'status': task_result.status
                 }
-                self.result_ids[task_result.id] = task_result
+                self.task_ids[task_result.id] = task_result
                 rsp_msg.SUITE_RUNNING['msg'] = 'case status: %s' % (task_result.status)
                 return Response(rsp_msg.SUITE_RUNNING)
 
@@ -471,8 +477,8 @@ class SuiteViewSet(viewsets.GenericViewSet):
             if id:
                 print('views to check run suite: %s, id: %s' % (suite.name, id))
 
-                if id in self.result_ids:
-                    task_result = self.result_ids[id]
+                if id in self.task_ids:
+                    task_result = self.task_ids[id]
                 else:
                     task_result = None
 
@@ -488,7 +494,7 @@ class SuiteViewSet(viewsets.GenericViewSet):
                 })
                 rsp_msg.SUITE_RUN_SUCCESS['result'] = reverse(
                     'suiteresult-detail', args=[suite_result.pk], request=request)
-                self.result_ids.pop(id)
+                self.task_ids.pop(id)
                 return Response(rsp_msg.SUITE_RUN_SUCCESS)
 
             elif task_result:
@@ -510,13 +516,13 @@ class SuiteViewSet(viewsets.GenericViewSet):
     @action(detail=True, methods=['get', 'delete'])
     def cancel_run(self, request, pk=None):
         suite = self.get_object()
-        result_id = request.query_params.get('result_id', None)
-        if result_id:
-            print('views to cancel run suite: %s, id: %s' % (suite.name, result_id))
+        id = request.query_params.get('id', None)
+        if id:
+            print('views to cancel run suite: %s, id: %s' % (suite.name, id))
 
-            if result_id in self.result_ids:
-                revoke(result_id, terminate=True)
-                self.result_ids.pop(result_id)
+            if id in self.task_ids:
+                revoke(id, terminate=True)
+                self.task_ids.pop(id)
                 return Response(rsp_msg.CASE_CANCEL)
 
         rsp_msg.SUITE_FAIL['msg'] = 'Invalid task ID!'
@@ -540,30 +546,34 @@ class CaseViewSet(viewsets.GenericViewSet):
         return CaseSerializer
 
     def list(self, request, format=None):
+        cases = self.get_queryset()
         project_id = request.query_params.get('project_id', None)
         suite_id = request.query_params.get('suite_id', None)
         name = request.query_params.get('name', None)
         api_id = request.query_params.get('api_id', None)
+
         if name:
-            case = self.get_queryset().get(name=name)
+            case = cases.get(name=name)
             serializer = self.get_serializer(case, many=False)
             return Response(serializer.data)
-        elif project_id:
-            cases = self.get_queryset().filter(project__id=project_id)
-        elif suite_id:
-            cases = self.get_queryset().filter(suites__id=suite_id)
-        elif api_id:
-            cases = []
+
+        if project_id:
+            cases = cases.filter(project__id=project_id)
+
+        if suite_id:
+            cases = cases.filter(suites__id=suite_id)
+
+        if api_id:
+            tmp_cases = []
             try:
                 api = Api.objects.get(pk=api_id)
             except Api.DoesNotExist:
                 return Response("Api with ID %s doesn't exist!" % (api_id))
             my_steps = api.my_steps.all()
             for step in my_steps:
-                if step.case:
-                    cases.append(step.case)
-        else:
-            cases = self.get_queryset()
+                if step.case and step.case in cases:
+                    tmp_cases.append(step.case)
+            cases = tmp_cases
 
         page_cases = self.paginate_queryset(cases)
         serializer = self.get_serializer(page_cases, many=True)
@@ -649,14 +659,15 @@ class StepViewSet(viewsets.ModelViewSet):
         return StepSerializer
 
     def list(self, request, format=None):
+        steps = self.get_queryset()
         case_name = request.query_params.get('case_name', None)
         name = request.query_params.get('name', None)
+
         if name:
-            steps = self.get_queryset().filter(name=name)
-        elif case_name:
-            steps = self.get_queryset().filter(case__name=case_name)
-        else:
-            steps = self.get_queryset()
+            steps = steps.filter(name=name)
+
+        if case_name:
+            steps = steps.filter(case__name=case_name)
 
         page_steps = self.paginate_queryset(steps)
         serializer = self.get_serializer(page_steps, many=True)
@@ -721,11 +732,12 @@ class CaseResultViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.MyPageNumberPagination
 
     def list(self, request, format=None):
+        results = self.get_queryset()
         name = request.query_params.get('name', None)
+
         if name:
-            results = self.get_queryset().filter(name=name)
-        else:
-            results = self.get_queryset()
+            results = results.filter(name=name)
+
         page_results = self.paginate_queryset(results)
         serializer = self.get_serializer(page_results, many=True)
         return self.get_paginated_response(serializer.data)
@@ -760,11 +772,12 @@ class StepResultViewSet(viewsets.ModelViewSet):
     pagination_class = pagination.MyPageNumberPagination
 
     def list(self, request, format=None):
+        results = self.get_queryset()
         name = request.query_params.get('name', None)
+
         if name:
-            results = self.get_queryset().filter(name=name)
-        else:
-            results = self.get_queryset()
+            results = results.filter(name=name)
+
         page_results = self.paginate_queryset(results)
         serializer = self.get_serializer(page_results, many=True)
         return self.get_paginated_response(serializer.data)
@@ -785,11 +798,12 @@ class SuiteResultViewSet(viewsets.ModelViewSet):
         return SuiteResultSerializer
 
     def list(self, request, format=None):
+        results = self.get_queryset()
         name = request.query_params.get('name', None)
+
         if name:
-            results = self.get_queryset().filter(name=name)
-        else:
-            results = self.get_queryset()
+            results = results.filter(name=name)
+
         page_results = self.paginate_queryset(results)
         serializer = self.get_serializer(page_results, many=True)
         return self.get_paginated_response(serializer.data)
@@ -822,11 +836,12 @@ class ConfigViewSet(viewsets.ModelViewSet):
     permission_classes = (IsOwnerOrReadOnly, )
 
     def list(self, request, format=None):
+        configs = self.get_queryset()
         name = request.query_params.get('name', None)
+
         if name:
-            configs = self.get_queryset().filter(name=name)
-        else:
-            configs = self.get_queryset()
+            configs = configs.filter(name=name)
+
         page_configs = self.paginate_queryset(configs)
         serializer = self.get_serializer(page_configs, many=True)
         return self.get_paginated_response(serializer.data)

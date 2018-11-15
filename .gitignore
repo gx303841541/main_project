@@ -10,3 +10,5 @@ db.sqlite3
 backend/migrations
 *.pid
 front/
+.gitignore
+.vscode/

@@ -1,5 +1,6 @@
 import json
 import time
+import random
 from datetime import datetime
 
 from backend.httprunner.api import HttpRunner
@@ -28,7 +29,8 @@ def run_xxx(callback=None, dot_env_path=None):
 @celery_app.task(bind=True)
 def run_suite(self, callback=None, dot_env_path=None, *, suite):
     print("New task: to run suite %s" % (suite.name))
-    timestamp = '_' + datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
+    timestamp = '_' + \
+        datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
     # time.sleep(60)
     result = {
         'total': 0,
@@ -40,7 +42,8 @@ def run_suite(self, callback=None, dot_env_path=None, *, suite):
     }
     case_results = []
     for case in suite.my_cases.all().order_by('order'):
-        case_result_msg, case_result = run_case(case=case, request=None, return_caseresult_url=False, statistics=True)
+        case_result_msg, case_result = run_case(
+            case=case, request=None, return_caseresult_url=False, statistics=True)
         case_results.append(case_result)
         if case_result_msg['success']:
             result['total'] += 1
@@ -50,7 +53,8 @@ def run_suite(self, callback=None, dot_env_path=None, *, suite):
             result['total'] += 1
             result['errors'] += 1
 
-    suite_result = SuiteResult.objects.create(name=suite.name + timestamp, suite=suite, **result)
+    suite_result = SuiteResult.objects.create(
+        name=suite.name + timestamp + '--' + str(random.randint(10000000, 99999999)), suite=suite, **result)
     print("suite result %s created!" % (suite.name + timestamp))
     for case_result in case_results:
         if case_result:
@@ -71,7 +75,8 @@ def run_case(callback=None, dot_env_path=None, return_caseresult_url=False, stat
         return (rsp_msg.CASE_RUN_FAIL, case_ressult)
 
     try:
-        timestamp = '_' + datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
+        timestamp = '_' + \
+            datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d_%H:%M:%S')
         runner = HttpRunner()
         runner.run(data, )
         # print(runner.summary)
@@ -123,5 +128,6 @@ def run_case(callback=None, dot_env_path=None, return_caseresult_url=False, stat
         return (rsp_msg.CASE_RUN_SUCCESS, case_ressult)
 
     except Exception as e:
-        rsp_msg.CASE_RUN_FAIL['msg'] = "[%s]: %s" % (runner.exception_stage, str(e))
+        rsp_msg.CASE_RUN_FAIL['msg'] = "[%s]: %s" % (
+            runner.exception_stage, str(e))
         return (rsp_msg.CASE_RUN_FAIL, case_ressult)
