@@ -31,7 +31,11 @@ class BaseTable(models.Model):
 class Project(BaseTable):
     name = models.CharField("project name", unique=True, null=False, max_length=40)
     #owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='my_projects')
-    owner = models.ForeignKey(UserInfo, on_delete=models.CASCADE, related_name='my_projects')
+    owner = models.ForeignKey(
+        UserInfo,
+        on_delete=models.SET_NULL,
+        related_name='my_projects',
+        null=True)
     desc = models.CharField("project description", null=False, max_length=200)
 
     def __str__(self):

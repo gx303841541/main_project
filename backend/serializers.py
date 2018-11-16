@@ -18,6 +18,11 @@ class ProjectSerializer(serializers.HyperlinkedModelSerializer):
     my_configs = serializers.HyperlinkedRelatedField(
         many=True, view_name='config-detail', queryset=Config.objects.all(), allow_null=True, required=False)
 
+    owner_name = serializers.SerializerMethodField()
+
+    def get_owner_name(self, obj):
+        return obj.owner.username
+
     class Meta:
         model = Project
         fields = '__all__'

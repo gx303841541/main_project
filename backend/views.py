@@ -174,6 +174,7 @@ class ProjectViewSet(viewsets.GenericViewSet):
             projects = projects.filter(name=name)
 
         page_projects = self.paginate_queryset(projects)
+
         serializer = self.get_serializer(page_projects, many=True)
         return self.get_paginated_response(serializer.data)
 
@@ -196,7 +197,9 @@ class ProjectViewSet(viewsets.GenericViewSet):
     def retrieve(self, request, *args, **kwargs):
         project = self.get_object()
         serializer = self.get_serializer(project, many=False)
-        return Response(serializer.data)
+        tmp = serializer.data
+        tmp['owner'] = project.owner.username
+        return Response(tmp)
 
     def update(self, request, *args, **kwargs):
         project = self.get_object()
