@@ -49,7 +49,7 @@ har2case==0.1.10
 helpy==1.0.1
 HelpyFuncs==0.0.1
 html5lib==0.999
-httplib2==0.9.1
+httplib2==0.18.0
 HttpRunner==1.5.8
 humanfriendly==2.4
 idna==2.6
