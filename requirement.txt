@@ -55,7 +55,7 @@ humanfriendly==2.4
 idna==2.6
 isort==4.3.4
 itsdangerous==0.24
-Jinja2==2.10
+Jinja2==2.11.3
 kombu==3.0.37
 language-selector==0.1
 louis==2.6.4
