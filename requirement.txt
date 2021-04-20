@@ -83,7 +83,7 @@ plainbox==0.25
 pluggy==0.6.0
 psycopg2==2.7.1
 ptyprocess==0.5.1
-py==1.5.2
+py==1.10.0
 pyasn1==0.1.9
 pycodestyle==2.4.0
 pycparser==2.19
